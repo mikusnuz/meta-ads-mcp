@@ -1,6 +1,6 @@
 {
-  "name": "meta-ads-mcp",
-  "version": "1.0.0",
+  "name": "@mikusnuz/meta-ads-mcp",
+  "version": "1.2.0",
   "description": "MCP server for Meta Marketing API v25.0 — 123 tools for Facebook & Instagram ad campaign management",
   "type": "module",
   "bin": {

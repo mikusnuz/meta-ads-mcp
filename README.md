@@ -1,6 +1,6 @@
 # meta-ads-mcp
 
-[![npm version](https://img.shields.io/npm/v/meta-ads-mcp.svg)](https://www.npmjs.com/package/meta-ads-mcp)
+[![npm version](https://img.shields.io/npm/v/@mikusnuz/meta-ads-mcp.svg)](https://www.npmjs.com/package/@mikusnuz/meta-ads-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 MCP server for the **Meta Marketing API v25.0** — 123 tools for managing Facebook & Instagram ad campaigns, audiences, creatives, insights, catalogs, and more.
@@ -12,7 +12,7 @@ MCP server for the **Meta Marketing API v25.0** — 123 tools for managing Faceb
   "mcpServers": {
     "meta-ads": {
       "command": "npx",
-      "args": ["-y", "meta-ads-mcp"],
+      "args": ["-y", "@mikusnuz/meta-ads-mcp"],
       "env": {
         "META_ADS_ACCESS_TOKEN": "your-access-token",
         "META_AD_ACCOUNT_ID": "123456789",
