@@ -1,0 +1,64 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.mikusnuz/meta-ads",
+  "description": "MCP server for Meta Marketing API — Facebook & Instagram ad campaign management",
+  "repository": {
+    "url": "https://github.com/mikusnuz/meta-ads-mcp",
+    "source": "github"
+  },
+  "version": "1.2.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@mikusnuz/meta-ads-mcp",
+      "version": "1.2.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "META_ADS_ACCESS_TOKEN",
+          "description": "Meta Marketing API access token",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "META_AD_ACCOUNT_ID",
+          "description": "Meta Ad Account ID (e.g. act_123456)",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "META_APP_ID",
+          "description": "Meta App ID",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "META_APP_SECRET",
+          "description": "Meta App Secret",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "META_BUSINESS_ID",
+          "description": "Meta Business Manager ID",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "META_PIXEL_ID",
+          "description": "Meta Pixel ID",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}
