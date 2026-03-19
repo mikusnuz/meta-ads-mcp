@@ -5,6 +5,19 @@
 
 **Meta Marketing API v25.0** MCP 서버 — Facebook & Instagram 광고 캠페인 관리를 위한 123개 도구를 제공합니다.
 
+## 이런 경우에 사용하세요
+
+- **"새 Facebook 광고 캠페인 만들어줘"** — `create_campaign`, `create_adset`, `create_ad`, `create_creative`로 전체 퍼널 구성
+- **"오늘 광고 성과 확인해줘"** — `get_account_insights` 또는 `get_campaign_insights`로 오늘 날짜 지표 조회
+- **"ROAS 2 미만인 캠페인 전부 중지해줘"** — `list_campaigns` + `get_campaign_insights`로 저성과 캠페인 식별 후 `update_campaign`으로 중지
+- **"두 광고 크리에이티브 A/B 테스트 설정해줘"** — `create_experiment`로 광고 세트 간 통제 테스트 실행
+- **"고객 데이터로 유사 타겟 만들어줘"** — `create_custom_audience` + `add_users_to_audience` 후 `create_lookalike_audience`
+- **"광고 이미지 업로드하고 캐러셀 광고 만들어줘"** — `upload_image`로 이미지 업로드 후 `create_creative`로 캐러셀 구성
+- **"최근 30일 상세 성과 리포트 뽑아줘"** — `create_async_report`로 대용량 리포트 생성 후 `get_async_report`로 조회
+- **"경쟁사 광고 찾아줘"** — `search_ad_library`로 공개 광고 데이터 검색
+- **"성과 나쁜 광고 자동 중지 규칙 만들어줘"** — `create_rule`로 CPA > 임계값 등 조건 설정
+- **"다이나믹 광고용 상품 카탈로그 관리해줘"** — `create_catalog`, `create_feed`, `upload_feed`로 동적 상품 광고 설정
+
 ## 설치
 
 ```json

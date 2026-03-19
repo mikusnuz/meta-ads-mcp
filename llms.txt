@@ -1,0 +1,98 @@
+# meta-ads-mcp
+
+> MCP server for the Meta Marketing API v25.0 — 123 tools for managing Facebook & Instagram ad campaigns, audiences, creatives, insights, catalogs, and more.
+
+## Install
+
+```json
+{
+  "mcpServers": {
+    "meta-ads": {
+      "command": "npx",
+      "args": ["-y", "@mikusnuz/meta-ads-mcp"],
+      "env": {
+        "META_ADS_ACCESS_TOKEN": "your-access-token",
+        "META_AD_ACCOUNT_ID": "123456789",
+        "META_APP_ID": "your-app-id",
+        "META_APP_SECRET": "your-app-secret",
+        "META_BUSINESS_ID": "your-business-id",
+        "META_PIXEL_ID": "your-pixel-id"
+      }
+    }
+  }
+}
+```
+
+## Environment Variables
+
+- META_ADS_ACCESS_TOKEN (required): Meta Marketing API access token
+- META_AD_ACCOUNT_ID (required): Ad account ID (numeric, without act_ prefix)
+- META_APP_ID (optional): App ID for token exchange/debug
+- META_APP_SECRET (optional): App secret for token exchange/debug
+- META_BUSINESS_ID (optional): Business Manager ID for business tools
+- META_PIXEL_ID (optional): Pixel ID for conversion tools
+
+## Tools (123)
+
+### Campaign Management (22)
+list_campaigns, get_campaign, create_campaign, update_campaign, delete_campaign, get_campaign_adsets, get_campaign_ads, get_campaign_leads, list_adsets, get_adset, create_adset, update_adset, delete_adset, get_adset_ads, get_adset_leads, list_ads, get_ad, create_ad, update_ad, delete_ad, get_ad_preview, get_delivery_estimate
+
+### Creatives (5)
+list_creatives, get_creative, create_creative, update_creative, create_dynamic_creative
+
+### Media Assets (12)
+list_images, upload_image, get_image, delete_image, list_videos, upload_video, get_video, delete_video, list_canvases, get_canvas, create_canvas, delete_canvas
+
+### Audiences & Targeting (15)
+list_custom_audiences, get_audience, create_custom_audience, update_audience, delete_audience, add_users_to_audience, remove_users_from_audience, create_lookalike_audience, list_saved_audiences, get_saved_audience, search_targeting, search_locations, search_targeting_map, get_reach_estimate, get_targeting_suggestions
+
+### Insights & Reporting (6)
+get_account_insights, get_campaign_insights, get_adset_insights, get_ad_insights, create_async_report, get_async_report
+
+### Leads (4)
+get_form_leads, get_lead, list_lead_forms, get_lead_form
+
+### Catalog & Commerce (15)
+list_catalogs, get_catalog, create_catalog, update_catalog, list_product_sets, create_product_set, get_product_set, update_product_set, list_products, get_product, update_product, list_feeds, create_feed, upload_feed, get_feed_uploads
+
+### Automation & Rules (5)
+list_rules, get_rule, create_rule, update_rule, delete_rule
+
+### Experiments (5)
+list_experiments, create_experiment, get_experiment, update_experiment, get_experiment_results
+
+### Conversions (4)
+send_conversion_event, send_offline_event, list_offline_event_sets, create_offline_event_set
+
+### Budget & Planning (8)
+list_budget_schedules, create_budget_schedule, update_budget_schedule, delete_budget_schedule, list_rf_predictions, create_rf_prediction, get_rf_prediction, delete_rf_prediction
+
+### Brand Safety (5)
+list_block_lists, create_block_list, add_to_block_list, remove_from_block_list, delete_block_list
+
+### Account & Business (13)
+get_ad_account, list_ad_accounts, update_ad_account, get_account_activities, list_account_users, list_businesses, get_business, list_business_ad_accounts, list_business_users, add_business_user, remove_business_user, list_system_users, create_system_user
+
+### Auth & Token (3)
+exchange_token, refresh_token, debug_token
+
+### Ad Library (1)
+search_ad_library
+
+## Resources (3)
+- ads://account — Ad account overview (status, balance, currency, timezone, total spend)
+- ads://campaigns-overview — All active campaigns with budget information
+- ads://spending-today — Today's spending summary (spend, impressions, clicks, reach)
+
+## Prompts (3)
+- campaign_wizard — Step-by-step guide to create a full ad campaign
+- performance_report — Analyze ad performance with breakdowns and recommendations
+- audience_builder — Build and refine target audiences
+
+## Permissions Required
+- ads_management: All campaign/ad set/ad/creative CRUD
+- ads_read: All read/list operations and insights
+- business_management: Business tools, system users, account assignments
+- leads_retrieval: Lead form and lead data tools
+- catalog_management: Catalog, product set, product, feed tools
+- pages_read_engagement: Lead forms linked to pages

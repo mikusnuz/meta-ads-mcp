@@ -5,6 +5,21 @@
 
 MCP server for the **Meta Marketing API v25.0** — 123 tools for managing Facebook & Instagram ad campaigns, audiences, creatives, insights, catalogs, and more.
 
+## When to Use
+
+Use this MCP when you need to:
+
+- **"Create a new Facebook ad campaign"** — use `create_campaign`, `create_adset`, `create_ad`, and `create_creative` to build a full funnel
+- **"Check how my ads are performing today"** — use `get_account_insights` or `get_campaign_insights` with today's date range
+- **"Pause all campaigns with ROAS below 2"** — use `list_campaigns` + `get_campaign_insights` to find underperformers, then `update_campaign` to pause
+- **"Set up A/B test between two ad creatives"** — use `create_experiment` to run a controlled test between ad sets
+- **"Create a lookalike audience from my customers"** — use `create_custom_audience`, `add_users_to_audience`, then `create_lookalike_audience`
+- **"Upload ad images and create a carousel ad"** — use `upload_image` for each image, then `create_creative` with carousel format
+- **"Get a detailed performance report for last 30 days"** — use `create_async_report` for large date ranges, then `get_async_report` to retrieve
+- **"Search the Facebook Ad Library for competitor ads"** — use `search_ad_library` to find public ad data
+- **"Set up automated rules to pause underperforming ads"** — use `create_rule` with conditions like CPA > threshold
+- **"Manage my product catalog for dynamic ads"** — use `create_catalog`, `create_feed`, and `upload_feed` to set up dynamic product ads
+
 ## Installation
 
 ```json
