@@ -3,7 +3,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { createRequire } from "node:module";
-import { loadConfig } from "./config.js";
+import { loadConfig, AdsConfig } from "./config.js";
 import { AdsClient } from "./services/ads-client.js";
 
 // --- Tool imports ---
@@ -108,3 +108,50 @@ main().catch((err) => {
   console.error("Fatal error:", err);
   process.exit(1);
 });
+
+// ── Smithery Sandbox ──
+
+export function createSandboxServer() {
+  const sandbox = new McpServer({
+    name: "meta-ads-mcp",
+    version,
+  });
+
+  const mockConfig: AdsConfig = {
+    accessToken: "",
+    adAccountId: "",
+    appId: "",
+    appSecret: "",
+    businessId: "",
+    pixelId: "",
+  };
+  const mockClient = new AdsClient(mockConfig);
+
+  registerCampaignTools(sandbox, mockClient);
+  registerAdsetTools(sandbox, mockClient);
+  registerAdTools(sandbox, mockClient);
+  registerCreativeTools(sandbox, mockClient);
+  registerImageTools(sandbox, mockClient);
+  registerVideoTools(sandbox, mockClient);
+  registerCanvasTools(sandbox, mockClient);
+  registerAudienceTools(sandbox, mockClient);
+  registerTargetingTools(sandbox, mockClient);
+  registerInsightTools(sandbox, mockClient);
+  registerLeadTools(sandbox, mockClient);
+  registerCatalogTools(sandbox, mockClient);
+  registerFeedTools(sandbox, mockClient);
+  registerRuleTools(sandbox, mockClient);
+  registerExperimentTools(sandbox, mockClient);
+  registerConversionTools(sandbox, mockClient);
+  registerBudgetTools(sandbox, mockClient);
+  registerReachFrequencyTools(sandbox, mockClient);
+  registerBrandSafetyTools(sandbox, mockClient);
+  registerAccountTools(sandbox, mockClient);
+  registerBusinessTools(sandbox, mockClient);
+  registerAuthTools(sandbox, mockClient);
+  registerAdLibraryTools(sandbox, mockClient);
+  registerResources(sandbox, mockClient);
+  registerPrompts(sandbox);
+
+  return sandbox;
+}
