@@ -141,6 +141,49 @@ export function registerAdsetTools(server: McpServer, client: AdsClient): void {
     }
   );
 
+  // ─── copy_adset ─────────────────────────────────────────────
+  server.tool(
+    "copy_adset",
+    "Copy an existing ad set. Creates a duplicate within the same or different campaign.",
+    {
+      adset_id: z.string().describe("Source ad set ID to copy"),
+      campaign_id: z.string().optional().describe("Target campaign ID. If omitted, copies to same campaign"),
+      name: z.string().optional().describe("Name for the copied ad set"),
+      status: z.string().optional().default("PAUSED").describe("Status for copied ad set (default PAUSED)"),
+      deep_copy: z.boolean().optional().default(true).describe("Copy ads within the ad set (default true)"),
+    },
+    async ({ adset_id, campaign_id, name, status, deep_copy }) => {
+      try {
+        const params: Record<string, unknown> = {};
+        if (campaign_id) params.campaign_id = campaign_id;
+        if (name) params.rename_options = JSON.stringify({ rename_suffix: "", rename_prefix: "", new_name_prefix: name });
+        if (status) params.status_option = status;
+        if (deep_copy !== undefined) params.deep_copy = deep_copy;
+        const { data, rateLimit } = await client.post(`/${adset_id}/copies`, params);
+        return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
+      } catch (error) {
+        return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
+      }
+    }
+  );
+
+  // ─── get_adset_targeting_sentence ──────────────────────────
+  server.tool(
+    "get_adset_targeting_sentence",
+    "Get human-readable targeting description for an ad set. Converts targeting spec into readable sentences.",
+    {
+      adset_id: z.string().describe("Ad set ID"),
+    },
+    async ({ adset_id }) => {
+      try {
+        const { data, rateLimit } = await client.get(`/${adset_id}/targetingsentencelines`);
+        return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
+      } catch (error) {
+        return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
+      }
+    }
+  );
+
   // ─── get_adset_ads ─────────────────────────────────────────
   server.tool(
     "get_adset_ads",

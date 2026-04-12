@@ -183,6 +183,25 @@ export function registerAudienceTools(server: McpServer, client: AdsClient): voi
     }
   );
 
+  // ─── get_audience_health ────────────────────────────────────
+  server.tool(
+    "get_audience_health",
+    "Get health status and delivery readiness of a custom audience. Shows match rate, size, and operation status.",
+    {
+      audience_id: z.string().describe("Custom audience ID"),
+    },
+    async ({ audience_id }) => {
+      try {
+        const { data, rateLimit } = await client.get(`/${audience_id}`, {
+          fields: "id,name,approximate_count_lower_bound,approximate_count_upper_bound,operation_status,delivery_status,permission_for_actions",
+        });
+        return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
+      } catch (error) {
+        return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
+      }
+    }
+  );
+
   // ─── list_saved_audiences ──────────────────────────────────
   server.tool(
     "list_saved_audiences",

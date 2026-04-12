@@ -109,4 +109,22 @@ export function registerCreativeTools(server: McpServer, client: AdsClient): voi
       }
     }
   );
+
+  // ─── generate_preview ──────────────────────────────────────
+  server.tool(
+    "generate_preview",
+    "Generate an ad preview without needing an existing ad. Provide creative spec directly to see how it would look.",
+    {
+      ad_format: z.string().describe("Ad format: DESKTOP_FEED_STANDARD, MOBILE_FEED_STANDARD, INSTAGRAM_STANDARD, INSTAGRAM_STORY, RIGHT_COLUMN_STANDARD, etc."),
+      creative: z.string().describe("JSON string of creative spec: {object_story_spec: {...}} or {object_story_id: '...'}"),
+    },
+    async ({ ad_format, creative }) => {
+      try {
+        const { data, rateLimit } = await client.get(`${client.accountPath}/generatepreviews`, { ad_format, creative });
+        return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
+      } catch (error) {
+        return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
+      }
+    }
+  );
 }

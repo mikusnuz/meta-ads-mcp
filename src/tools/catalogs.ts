@@ -213,4 +213,46 @@ export function registerCatalogTools(server: McpServer, client: AdsClient): void
       }
     }
   );
+
+  // ─── batch_products ────────────────────────────────────────
+  server.tool(
+    "batch_products",
+    "Batch create, update, or delete products in a catalog. Supports up to 5,000 items per request. Update operations support upsert.",
+    {
+      catalog_id: z.string().describe("Product catalog ID"),
+      requests: z.string().describe("JSON array of batch requests. Each: {method: 'CREATE'|'UPDATE'|'DELETE', retailer_id: string, data?: {name, description, price, url, image_url, availability, ...}}"),
+      allow_upsert: z.boolean().optional().default(false).describe("Allow UPDATE to create items if they don't exist (default false)"),
+    },
+    async ({ catalog_id, requests, allow_upsert }) => {
+      try {
+        const params: Record<string, unknown> = {
+          requests,
+          item_type: "PRODUCT_ITEM",
+        };
+        if (allow_upsert) params.allow_upsert = allow_upsert;
+        const { data, rateLimit } = await client.post(`/${catalog_id}/items_batch`, params);
+        return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
+      } catch (error) {
+        return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
+      }
+    }
+  );
+
+  // ─── get_batch_status ──────────────────────────────────────
+  server.tool(
+    "get_batch_status",
+    "Check the status of a catalog batch operation.",
+    {
+      catalog_id: z.string().describe("Product catalog ID"),
+      handle: z.string().describe("Batch handle returned from batch_products"),
+    },
+    async ({ catalog_id, handle }) => {
+      try {
+        const { data, rateLimit } = await client.get(`/${catalog_id}/check_batch_request_status`, { handle });
+        return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
+      } catch (error) {
+        return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
+      }
+    }
+  );
 }

@@ -1,6 +1,6 @@
 # meta-ads-mcp
 
-> MCP server for the Meta Marketing API v25.0 — 123 tools for managing Facebook & Instagram ad campaigns, audiences, creatives, insights, catalogs, and more.
+> MCP server for the Meta Marketing API v25.0 — 135 tools for managing Facebook & Instagram ad campaigns, audiences, creatives, insights, catalogs, and more.
 
 ## Install
 

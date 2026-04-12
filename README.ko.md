@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/@mikusnuz/meta-ads-mcp.svg)](https://www.npmjs.com/package/@mikusnuz/meta-ads-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Meta Marketing API v25.0** MCP 서버 — Facebook & Instagram 광고 캠페인 관리를 위한 123개 도구를 제공합니다.
+**Meta Marketing API v25.0** MCP 서버 — Facebook & Instagram 광고 캠페인 관리를 위한 135개 도구를 제공합니다.
 
 ## 이런 경우에 사용하세요
 
@@ -50,9 +50,9 @@
 | `META_BUSINESS_ID` | 선택 | 비즈니스 매니저 ID — 비즈니스 도구에 필요 |
 | `META_PIXEL_ID` | 선택 | 픽셀 ID — 전환 도구에 필요 |
 
-## 도구 (123개)
+## 도구 (135개)
 
-### 캠페인 관리 (22)
+### 캠페인 관리 (25)
 
 | 도구 | 설명 |
 |---|---|
@@ -61,6 +61,7 @@
 | `create_campaign` | 새 캠페인 생성 |
 | `update_campaign` | 캠페인 설정 수정 |
 | `delete_campaign` | 캠페인 삭제 |
+| `copy_campaign` | 기존 캠페인 복제 (광고 세트 및 광고 포함) |
 | `get_campaign_adsets` | 캠페인 내 광고 세트 목록 조회 |
 | `get_campaign_ads` | 캠페인 내 광고 목록 조회 |
 | `get_campaign_leads` | 캠페인 리드 데이터 조회 |
@@ -69,6 +70,8 @@
 | `create_adset` | 새 광고 세트 생성 |
 | `update_adset` | 광고 세트 설정 수정 |
 | `delete_adset` | 광고 세트 삭제 |
+| `copy_adset` | 기존 광고 세트 복제 (같은/다른 캠페인으로) |
+| `get_adset_targeting_sentence` | 광고 세트 타겟팅을 읽기 쉬운 문장으로 변환 |
 | `get_adset_ads` | 광고 세트 내 광고 목록 조회 |
 | `get_adset_leads` | 광고 세트 리드 데이터 조회 |
 | `list_ads` | 필터링으로 광고 목록 조회 |
@@ -76,10 +79,11 @@
 | `create_ad` | 새 광고 생성 |
 | `update_ad` | 광고 설정 수정 |
 | `delete_ad` | 광고 삭제 |
+| `copy_ad` | 기존 광고 복제 (같은/다른 광고 세트로) |
 | `get_ad_preview` | 광고 미리보기 HTML 생성 |
 | `get_delivery_estimate` | 광고 전달 예측 조회 |
 
-### 크리에이티브 (5)
+### 크리에이티브 (6)
 
 | 도구 | 설명 |
 |---|---|
@@ -88,6 +92,7 @@
 | `create_creative` | 새 광고 크리에이티브 생성 |
 | `update_creative` | 광고 크리에이티브 수정 |
 | `create_dynamic_creative` | 다이나믹 크리에이티브 생성 |
+| `generate_preview` | 기존 광고 없이 크리에이티브 스펙으로 미리보기 생성 |
 
 ### 미디어 에셋 (12)
 
@@ -106,7 +111,7 @@
 | `create_canvas` | 캔버스 생성 |
 | `delete_canvas` | 캔버스 삭제 |
 
-### 오디언스 & 타겟팅 (15)
+### 오디언스 & 타겟팅 (16)
 
 | 도구 | 설명 |
 |---|---|
@@ -118,6 +123,7 @@
 | `add_users_to_audience` | 맞춤 타겟에 사용자 추가 |
 | `remove_users_from_audience` | 맞춤 타겟에서 사용자 제거 |
 | `create_lookalike_audience` | 유사 타겟 생성 |
+| `get_audience_health` | 오디언스 건강 상태, 전달 준비도, 매치율 조회 |
 | `list_saved_audiences` | 저장된 타겟 목록 조회 |
 | `get_saved_audience` | 저장된 타겟 상세 조회 |
 | `search_targeting` | 관심사, 행동, 인구통계 타겟팅 검색 |
@@ -137,16 +143,17 @@
 | `create_async_report` | 비동기 인사이트 보고서 생성 |
 | `get_async_report` | 비동기 보고서 상태 및 결과 조회 |
 
-### 리드 (4)
+### 리드 (5)
 
 | 도구 | 설명 |
 |---|---|
 | `get_form_leads` | 리드 양식에서 리드 데이터 조회 |
 | `get_lead` | ID로 단일 리드 조회 |
+| `create_lead_form` | 페이지에 새 리드 생성 양식 생성 |
 | `list_lead_forms` | 페이지의 리드 생성 양식 목록 조회 |
 | `get_lead_form` | 리드 양식 상세 조회 |
 
-### 카탈로그 & 커머스 (15)
+### 카탈로그 & 커머스 (17)
 
 | 도구 | 설명 |
 |---|---|
@@ -165,6 +172,8 @@
 | `create_feed` | 데이터 피드 생성 |
 | `upload_feed` | 피드에 데이터 업로드 |
 | `get_feed_uploads` | 피드 업로드 이력 조회 |
+| `batch_products` | 제품 대량 생성/수정/삭제 (요청당 최대 5,000개) |
+| `get_batch_status` | 카탈로그 배치 작업 상태 확인 |
 
 ### 자동화 & 규칙 (5)
 
@@ -218,7 +227,7 @@
 | `remove_from_block_list` | 차단 목록에서 항목 제거 |
 | `delete_block_list` | 차단 목록 삭제 |
 
-### 계정 & 비즈니스 (13)
+### 계정 & 비즈니스 (15)
 
 | 도구 | 설명 |
 |---|---|
@@ -233,6 +242,8 @@
 | `list_business_users` | 비즈니스 내 사용자 목록 조회 |
 | `add_business_user` | 비즈니스에 사용자 추가 |
 | `remove_business_user` | 비즈니스에서 사용자 제거 |
+| `list_business_pages` | 비즈니스 소유 Facebook 페이지 목록 조회 |
+| `list_business_instagram_accounts` | 비즈니스 소유 Instagram 계정 목록 조회 |
 | `list_system_users` | 비즈니스 시스템 사용자 목록 조회 |
 | `create_system_user` | 시스템 사용자 생성 |
 

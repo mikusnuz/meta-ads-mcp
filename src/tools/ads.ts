@@ -118,6 +118,30 @@ export function registerAdTools(server: McpServer, client: AdsClient): void {
     }
   );
 
+  // ─── copy_ad ────────────────────────────────────────────────
+  server.tool(
+    "copy_ad",
+    "Copy an existing ad. Creates a duplicate within the same or different ad set.",
+    {
+      ad_id: z.string().describe("Source ad ID to copy"),
+      adset_id: z.string().optional().describe("Target ad set ID. If omitted, copies to same ad set"),
+      name: z.string().optional().describe("Name for the copied ad"),
+      status: z.string().optional().default("PAUSED").describe("Status for copied ad (default PAUSED)"),
+    },
+    async ({ ad_id, adset_id, name, status }) => {
+      try {
+        const params: Record<string, unknown> = {};
+        if (adset_id) params.adset_id = adset_id;
+        if (name) params.rename_options = JSON.stringify({ rename_suffix: "", rename_prefix: "", new_name_prefix: name });
+        if (status) params.status_option = status;
+        const { data, rateLimit } = await client.post(`/${ad_id}/copies`, params);
+        return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
+      } catch (error) {
+        return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
+      }
+    }
+  );
+
   // ─── get_ad_preview ────────────────────────────────────────
   server.tool(
     "get_ad_preview",

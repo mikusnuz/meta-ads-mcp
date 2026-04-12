@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/@mikusnuz/meta-ads-mcp.svg)](https://www.npmjs.com/package/@mikusnuz/meta-ads-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-MCP server for the **Meta Marketing API v25.0** — 123 tools for managing Facebook & Instagram ad campaigns, audiences, creatives, insights, catalogs, and more.
+MCP server for the **Meta Marketing API v25.0** — 135 tools for managing Facebook & Instagram ad campaigns, audiences, creatives, insights, catalogs, and more.
 
 ## When to Use
 
@@ -52,9 +52,9 @@ Use this MCP when you need to:
 | `META_BUSINESS_ID` | Optional | Business Manager ID — required for business tools |
 | `META_PIXEL_ID` | Optional | Pixel ID — required for conversion tools |
 
-## Tools (123)
+## Tools (135)
 
-### Campaign Management (22)
+### Campaign Management (25)
 
 | Tool | Description |
 |---|---|
@@ -63,6 +63,7 @@ Use this MCP when you need to:
 | `create_campaign` | Create a new campaign |
 | `update_campaign` | Update campaign settings |
 | `delete_campaign` | Delete a campaign |
+| `copy_campaign` | Copy an existing campaign with ad sets and ads |
 | `get_campaign_adsets` | List ad sets within a campaign |
 | `get_campaign_ads` | List ads within a campaign |
 | `get_campaign_leads` | Get leads from a campaign |
@@ -71,6 +72,8 @@ Use this MCP when you need to:
 | `create_adset` | Create a new ad set |
 | `update_adset` | Update ad set settings |
 | `delete_adset` | Delete an ad set |
+| `copy_adset` | Copy an existing ad set to same or different campaign |
+| `get_adset_targeting_sentence` | Get human-readable targeting description |
 | `get_adset_ads` | List ads within an ad set |
 | `get_adset_leads` | Get leads from an ad set |
 | `list_ads` | List ads with filtering |
@@ -78,10 +81,11 @@ Use this MCP when you need to:
 | `create_ad` | Create a new ad |
 | `update_ad` | Update ad settings |
 | `delete_ad` | Delete an ad |
+| `copy_ad` | Copy an existing ad to same or different ad set |
 | `get_ad_preview` | Generate ad preview HTML |
 | `get_delivery_estimate` | Get delivery estimate for an ad |
 
-### Creatives (5)
+### Creatives (6)
 
 | Tool | Description |
 |---|---|
@@ -90,6 +94,7 @@ Use this MCP when you need to:
 | `create_creative` | Create a new ad creative |
 | `update_creative` | Update an ad creative |
 | `create_dynamic_creative` | Create a dynamic creative |
+| `generate_preview` | Generate ad preview from creative spec without an existing ad |
 
 ### Media Assets (12)
 
@@ -108,7 +113,7 @@ Use this MCP when you need to:
 | `create_canvas` | Create a canvas |
 | `delete_canvas` | Delete a canvas |
 
-### Audiences & Targeting (15)
+### Audiences & Targeting (16)
 
 | Tool | Description |
 |---|---|
@@ -120,6 +125,7 @@ Use this MCP when you need to:
 | `add_users_to_audience` | Add users to a custom audience |
 | `remove_users_from_audience` | Remove users from a custom audience |
 | `create_lookalike_audience` | Create a lookalike audience |
+| `get_audience_health` | Get audience health, delivery status, and match rate |
 | `list_saved_audiences` | List saved audiences |
 | `get_saved_audience` | Get saved audience details |
 | `search_targeting` | Search targeting interests, behaviors, demographics |
@@ -139,16 +145,17 @@ Use this MCP when you need to:
 | `create_async_report` | Create an async insights report |
 | `get_async_report` | Poll async report status and results |
 
-### Leads (4)
+### Leads (5)
 
 | Tool | Description |
 |---|---|
 | `get_form_leads` | Get leads from a lead form |
 | `get_lead` | Get a single lead by ID |
+| `create_lead_form` | Create a new lead generation form on a page |
 | `list_lead_forms` | List lead gen forms for a page |
 | `get_lead_form` | Get lead form details |
 
-### Catalog & Commerce (15)
+### Catalog & Commerce (17)
 
 | Tool | Description |
 |---|---|
@@ -167,6 +174,8 @@ Use this MCP when you need to:
 | `create_feed` | Create a data feed |
 | `upload_feed` | Upload data to a feed |
 | `get_feed_uploads` | Get feed upload history |
+| `batch_products` | Batch create, update, or delete products (up to 5,000/request) |
+| `get_batch_status` | Check status of a catalog batch operation |
 
 ### Automation & Rules (5)
 
@@ -220,7 +229,7 @@ Use this MCP when you need to:
 | `remove_from_block_list` | Remove entries from a block list |
 | `delete_block_list` | Delete a block list |
 
-### Account & Business (13)
+### Account & Business (15)
 
 | Tool | Description |
 |---|---|
@@ -235,6 +244,8 @@ Use this MCP when you need to:
 | `list_business_users` | List users in a business |
 | `add_business_user` | Add a user to a business |
 | `remove_business_user` | Remove a user from a business |
+| `list_business_pages` | List Facebook Pages owned by a business |
+| `list_business_instagram_accounts` | List Instagram accounts owned by a business |
 | `list_system_users` | List system users for a business |
 | `create_system_user` | Create a system user |
 

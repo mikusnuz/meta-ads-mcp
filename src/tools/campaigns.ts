@@ -136,6 +136,30 @@ export function registerCampaignTools(server: McpServer, client: AdsClient): voi
     }
   );
 
+  // ─── copy_campaign ──────────────────────────────────────────
+  server.tool(
+    "copy_campaign",
+    "Copy an existing campaign. Creates a duplicate with optional name override. Copies structure including ad sets and ads.",
+    {
+      campaign_id: z.string().describe("Source campaign ID to copy"),
+      name: z.string().optional().describe("Name for the copied campaign. Defaults to 'Copy of <original>'"),
+      status: z.string().optional().default("PAUSED").describe("Status for copied campaign (default PAUSED)"),
+      deep_copy: z.boolean().optional().default(true).describe("Copy ad sets and ads within the campaign (default true)"),
+    },
+    async ({ campaign_id, name, status, deep_copy }) => {
+      try {
+        const params: Record<string, unknown> = {};
+        if (name) params.rename_options = JSON.stringify({ rename_suffix: "", rename_prefix: "", new_name_prefix: name });
+        if (status) params.status_option = status;
+        if (deep_copy !== undefined) params.deep_copy = deep_copy;
+        const { data, rateLimit } = await client.post(`/${campaign_id}/copies`, params);
+        return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
+      } catch (error) {
+        return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
+      }
+    }
+  );
+
   // ─── get_campaign_adsets ───────────────────────────────────
   server.tool(
     "get_campaign_adsets",

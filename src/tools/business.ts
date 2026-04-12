@@ -152,6 +152,64 @@ export function registerBusinessTools(server: McpServer, client: AdsClient): voi
     }
   );
 
+  // ─── list_business_pages ───────────────────────────────────────
+  server.tool(
+    "list_business_pages",
+    "List Facebook Pages owned by the configured business. Requires META_BUSINESS_ID env var.",
+    {
+      fields: z.string().optional().describe("Comma-separated fields to return"),
+      limit: z.number().optional().default(25).describe("Number of results (default 25)"),
+      after: z.string().optional().describe("Pagination cursor for next page"),
+    },
+    async ({ fields, limit, after }) => {
+      try {
+        let businessId: string;
+        try {
+          businessId = client.businessId;
+        } catch {
+          return { content: [{ type: "text" as const, text: "META_BUSINESS_ID environment variable is required for this operation. Please set it and restart the server." }], isError: true };
+        }
+        const params: Record<string, unknown> = {};
+        if (fields) params.fields = fields;
+        if (limit) params.limit = limit;
+        if (after) params.after = after;
+        const { data, rateLimit } = await client.get(`/${businessId}/owned_pages`, params);
+        return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
+      } catch (error) {
+        return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
+      }
+    }
+  );
+
+  // ─── list_business_instagram_accounts ─────────────────────────
+  server.tool(
+    "list_business_instagram_accounts",
+    "List Instagram accounts owned by the configured business. Requires META_BUSINESS_ID env var.",
+    {
+      fields: z.string().optional().describe("Comma-separated fields to return"),
+      limit: z.number().optional().default(25).describe("Number of results (default 25)"),
+      after: z.string().optional().describe("Pagination cursor for next page"),
+    },
+    async ({ fields, limit, after }) => {
+      try {
+        let businessId: string;
+        try {
+          businessId = client.businessId;
+        } catch {
+          return { content: [{ type: "text" as const, text: "META_BUSINESS_ID environment variable is required for this operation. Please set it and restart the server." }], isError: true };
+        }
+        const params: Record<string, unknown> = {};
+        if (fields) params.fields = fields;
+        if (limit) params.limit = limit;
+        if (after) params.after = after;
+        const { data, rateLimit } = await client.get(`/${businessId}/owned_instagram_accounts`, params);
+        return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
+      } catch (error) {
+        return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
+      }
+    }
+  );
+
   // ─── list_system_users ────────────────────────────────────────
   server.tool(
     "list_system_users",
