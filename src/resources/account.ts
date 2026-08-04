@@ -10,7 +10,7 @@ export function registerResources(server: McpServer, client: AdsClient) {
       mimeType: "application/json",
     },
     async () => {
-      const { data } = await client.get(`${client.accountPath}`, {
+      const { data } = await client.get(`${client.accountPath()}`, {
         fields: "id,name,account_status,balance,currency,timezone_name,amount_spent,business_name",
       });
       return {
@@ -33,7 +33,7 @@ export function registerResources(server: McpServer, client: AdsClient) {
       mimeType: "application/json",
     },
     async () => {
-      const { data } = await client.get(`${client.accountPath}/campaigns`, {
+      const { data } = await client.get(`${client.accountPath()}/campaigns`, {
         fields: "id,name,status,objective,daily_budget,lifetime_budget",
         effective_status: '["ACTIVE"]',
         limit: "100",
@@ -58,7 +58,7 @@ export function registerResources(server: McpServer, client: AdsClient) {
       mimeType: "application/json",
     },
     async () => {
-      const { data } = await client.get(`${client.accountPath}/insights`, {
+      const { data } = await client.get(`${client.accountPath()}/insights`, {
         date_preset: "today",
         fields: "spend,impressions,clicks,reach",
       });
