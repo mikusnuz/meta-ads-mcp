@@ -11,13 +11,14 @@ export function registerTargetingTools(server: McpServer, client: AdsClient): vo
       q: z.string().describe("Search query (e.g. 'fitness', 'technology', 'cooking')"),
       type: z.string().optional().describe("Targeting type filter: adinterest, adgeolocation, adeducationschool, adeducationmajor, adworkemployer, adworkposition, adlocale, etc."),
       limit: z.number().optional().default(25).describe("Number of results (default 25)"),
+      account_id: z.string().optional().describe("Ad account ID to query (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ q, type, limit }) => {
+    async ({ q, type, limit, account_id }) => {
       try {
         const params: Record<string, unknown> = { q };
         if (type) params.type = type;
         if (limit) params.limit = limit;
-        const { data, rateLimit } = await client.get(`${client.accountPath}/targetingsearch`, params);
+        const { data, rateLimit } = await client.get(`${client.accountPath(account_id)}/targetingsearch`, params);
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
@@ -53,10 +54,11 @@ export function registerTargetingTools(server: McpServer, client: AdsClient): vo
     "Map targeting IDs to their full details (names, types, paths). Useful for resolving IDs obtained from other endpoints.",
     {
       targeting_list: z.string().describe("JSON array of targeting IDs to look up"),
+      account_id: z.string().optional().describe("Ad account ID to query (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ targeting_list }) => {
+    async ({ targeting_list, account_id }) => {
       try {
-        const { data, rateLimit } = await client.get(`${client.accountPath}/targetingsearchmap`, { targeting_list });
+        const { data, rateLimit } = await client.get(`${client.accountPath(account_id)}/targetingsearchmap`, { targeting_list });
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
@@ -70,10 +72,11 @@ export function registerTargetingTools(server: McpServer, client: AdsClient): vo
     "Get estimated audience reach for a given targeting specification. Useful for planning campaigns before creating them.",
     {
       targeting_spec: z.string().describe("JSON string of targeting spec (same format as ad set targeting)"),
+      account_id: z.string().optional().describe("Ad account ID to query (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ targeting_spec }) => {
+    async ({ targeting_spec, account_id }) => {
       try {
-        const { data, rateLimit } = await client.get(`${client.accountPath}/reachestimate`, { targeting_spec });
+        const { data, rateLimit } = await client.get(`${client.accountPath(account_id)}/reachestimate`, { targeting_spec });
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
@@ -87,10 +90,11 @@ export function registerTargetingTools(server: McpServer, client: AdsClient): vo
     "Get targeting suggestions based on existing targeting criteria. Meta suggests related interests, behaviors, and demographics.",
     {
       targeting_list: z.string().describe("JSON string of current targeting criteria to get suggestions for"),
+      account_id: z.string().optional().describe("Ad account ID to query (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ targeting_list }) => {
+    async ({ targeting_list, account_id }) => {
       try {
-        const { data, rateLimit } = await client.get(`${client.accountPath}/targetingsuggestions`, { targeting_list });
+        const { data, rateLimit } = await client.get(`${client.accountPath(account_id)}/targetingsuggestions`, { targeting_list });
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };

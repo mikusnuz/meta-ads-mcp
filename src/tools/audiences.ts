@@ -11,14 +11,15 @@ export function registerAudienceTools(server: McpServer, client: AdsClient): voi
       fields: z.string().optional().describe("Comma-separated fields to return"),
       limit: z.number().optional().default(25).describe("Number of results (default 25)"),
       after: z.string().optional().describe("Pagination cursor for next page"),
+      account_id: z.string().optional().describe("Ad account ID to query (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ fields, limit, after }) => {
+    async ({ fields, limit, after, account_id }) => {
       try {
         const params: Record<string, unknown> = {};
         if (fields) params.fields = fields;
         if (limit) params.limit = limit;
         if (after) params.after = after;
-        const { data, rateLimit } = await client.get(`${client.accountPath}/customaudiences`, params);
+        const { data, rateLimit } = await client.get(`${client.accountPath(account_id)}/customaudiences`, params);
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
@@ -69,13 +70,14 @@ export function registerAudienceTools(server: McpServer, client: AdsClient): voi
       ]).describe("Audience subtype"),
       description: z.string().optional().describe("Audience description"),
       customer_file_source: z.string().optional().describe("Source of customer file: USER_PROVIDED_ONLY, PARTNER_PROVIDED_ONLY, BOTH_USER_AND_PARTNER_PROVIDED"),
+      account_id: z.string().optional().describe("Ad account ID to create the audience in (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ name, subtype, description, customer_file_source }) => {
+    async ({ name, subtype, description, customer_file_source, account_id }) => {
       try {
         const params: Record<string, unknown> = { name, subtype };
         if (description) params.description = description;
         if (customer_file_source) params.customer_file_source = customer_file_source;
-        const { data, rateLimit } = await client.post(`${client.accountPath}/customaudiences`, params);
+        const { data, rateLimit } = await client.post(`${client.accountPath(account_id)}/customaudiences`, params);
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
@@ -166,8 +168,9 @@ export function registerAudienceTools(server: McpServer, client: AdsClient): voi
       name: z.string().describe("Lookalike audience name"),
       origin_audience_id: z.string().describe("Source custom audience ID"),
       lookalike_spec: z.string().describe("JSON string: {country: 'US', ratio: 0.01-0.10} where ratio is the lookalike percentage (1%-10%)"),
+      account_id: z.string().optional().describe("Ad account ID to create the audience in (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ name, origin_audience_id, lookalike_spec }) => {
+    async ({ name, origin_audience_id, lookalike_spec, account_id }) => {
       try {
         const params: Record<string, unknown> = {
           name,
@@ -175,7 +178,7 @@ export function registerAudienceTools(server: McpServer, client: AdsClient): voi
           origin_audience_id,
           lookalike_spec,
         };
-        const { data, rateLimit } = await client.post(`${client.accountPath}/customaudiences`, params);
+        const { data, rateLimit } = await client.post(`${client.accountPath(account_id)}/customaudiences`, params);
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
@@ -210,14 +213,15 @@ export function registerAudienceTools(server: McpServer, client: AdsClient): voi
       fields: z.string().optional().describe("Comma-separated fields to return"),
       limit: z.number().optional().default(25).describe("Number of results (default 25)"),
       after: z.string().optional().describe("Pagination cursor for next page"),
+      account_id: z.string().optional().describe("Ad account ID to query (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ fields, limit, after }) => {
+    async ({ fields, limit, after, account_id }) => {
       try {
         const params: Record<string, unknown> = {};
         if (fields) params.fields = fields;
         if (limit) params.limit = limit;
         if (after) params.after = after;
-        const { data, rateLimit } = await client.get(`${client.accountPath}/saved_audiences`, params);
+        const { data, rateLimit } = await client.get(`${client.accountPath(account_id)}/saved_audiences`, params);
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };

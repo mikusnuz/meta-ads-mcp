@@ -11,14 +11,15 @@ export function registerReachFrequencyTools(server: McpServer, client: AdsClient
       fields: z.string().optional().describe("Comma-separated fields to return"),
       limit: z.number().optional().default(25).describe("Number of results (default 25)"),
       after: z.string().optional().describe("Pagination cursor for next page"),
+      account_id: z.string().optional().describe("Ad account ID to query (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ fields, limit, after }) => {
+    async ({ fields, limit, after, account_id }) => {
       try {
         const params: Record<string, unknown> = {};
         if (fields) params.fields = fields;
         if (limit) params.limit = limit;
         if (after) params.after = after;
-        const { data, rateLimit } = await client.get(`${client.accountPath}/reachfrequencypredictions`, params);
+        const { data, rateLimit } = await client.get(`${client.accountPath(account_id)}/reachfrequencypredictions`, params);
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
@@ -37,8 +38,9 @@ export function registerReachFrequencyTools(server: McpServer, client: AdsClient
       budget: z.number().describe("Budget in account currency cents"),
       frequency_cap: z.number().describe("Maximum frequency cap per user"),
       destination_id: z.string().describe("Destination ID (e.g. Facebook Page ID)"),
+      account_id: z.string().optional().describe("Ad account ID to create the prediction in (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ target_spec, start_time, stop_time, budget, frequency_cap, destination_id }) => {
+    async ({ target_spec, start_time, stop_time, budget, frequency_cap, destination_id, account_id }) => {
       try {
         const params: Record<string, unknown> = {
           target_spec,
@@ -48,7 +50,7 @@ export function registerReachFrequencyTools(server: McpServer, client: AdsClient
           frequency_cap,
           destination_id,
         };
-        const { data, rateLimit } = await client.post(`${client.accountPath}/reachfrequencypredictions`, params);
+        const { data, rateLimit } = await client.post(`${client.accountPath(account_id)}/reachfrequencypredictions`, params);
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };

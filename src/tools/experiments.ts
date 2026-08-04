@@ -11,10 +11,11 @@ export function registerExperimentTools(server: McpServer, client: AdsClient): v
       fields: z.string().optional().describe("Comma-separated fields to return"),
       limit: z.number().optional().default(25).describe("Number of results to return"),
       after: z.string().optional().describe("Pagination cursor for next page"),
+      account_id: z.string().optional().describe("Ad account ID to query (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async (params) => {
+    async ({ account_id, ...params }) => {
       try {
-        const { data, rateLimit } = await client.get(`${client.accountPath}/ad_studies`, { ...params });
+        const { data, rateLimit } = await client.get(`${client.accountPath(account_id)}/ad_studies`, { ...params });
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
@@ -33,10 +34,11 @@ export function registerExperimentTools(server: McpServer, client: AdsClient): v
       end_time: z.string().describe("End time in ISO 8601 or Unix timestamp"),
       type: z.string().optional().describe("Study type"),
       cells: z.string().describe("JSON array of test cells: [{name, campaign_id}]"),
+      account_id: z.string().optional().describe("Ad account ID to create the experiment in (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async (params) => {
+    async ({ account_id, ...params }) => {
       try {
-        const { data, rateLimit } = await client.post(`${client.accountPath}/ad_studies`, { ...params });
+        const { data, rateLimit } = await client.post(`${client.accountPath(account_id)}/ad_studies`, { ...params });
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };

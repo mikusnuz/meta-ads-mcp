@@ -46,10 +46,11 @@ export function registerConversionTools(server: McpServer, client: AdsClient): v
       fields: z.string().optional().describe("Comma-separated fields to return"),
       limit: z.number().optional().default(25).describe("Number of results to return"),
       after: z.string().optional().describe("Pagination cursor for next page"),
+      account_id: z.string().optional().describe("Ad account ID to query (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async (params) => {
+    async ({ account_id, ...params }) => {
       try {
-        const { data, rateLimit } = await client.get(`${client.accountPath}/offline_conversion_data_sets`, { ...params });
+        const { data, rateLimit } = await client.get(`${client.accountPath(account_id)}/offline_conversion_data_sets`, { ...params });
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
@@ -64,10 +65,11 @@ export function registerConversionTools(server: McpServer, client: AdsClient): v
     {
       name: z.string().describe("Event set name"),
       description: z.string().optional().describe("Event set description"),
+      account_id: z.string().optional().describe("Ad account ID to create the event set in (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async (params) => {
+    async ({ account_id, ...params }) => {
       try {
-        const { data, rateLimit } = await client.post(`${client.accountPath}/offline_conversion_data_sets`, { ...params });
+        const { data, rateLimit } = await client.post(`${client.accountPath(account_id)}/offline_conversion_data_sets`, { ...params });
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };

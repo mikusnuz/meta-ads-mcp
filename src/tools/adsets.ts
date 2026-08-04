@@ -13,8 +13,9 @@ export function registerAdsetTools(server: McpServer, client: AdsClient): void {
       fields: z.string().optional().describe("Comma-separated fields to return"),
       limit: z.number().optional().default(25).describe("Number of results (default 25)"),
       after: z.string().optional().describe("Pagination cursor for next page"),
+      account_id: z.string().optional().describe("Ad account ID to query (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ campaign_id, status, fields, limit, after }) => {
+    async ({ campaign_id, status, fields, limit, after, account_id }) => {
       try {
         const params: Record<string, unknown> = {};
         if (fields) params.fields = fields;
@@ -22,7 +23,7 @@ export function registerAdsetTools(server: McpServer, client: AdsClient): void {
         if (after) params.after = after;
         if (campaign_id) params.campaign_id = campaign_id;
         if (status) params.effective_status = `["${status}"]`;
-        const { data, rateLimit } = await client.get(`${client.accountPath}/adsets`, params);
+        const { data, rateLimit } = await client.get(`${client.accountPath(account_id)}/adsets`, params);
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
@@ -63,11 +64,13 @@ export function registerAdsetTools(server: McpServer, client: AdsClient): void {
       billing_event: z.string().describe("Billing event: IMPRESSIONS, LINK_CLICKS, APP_INSTALLS, THRUPLAY"),
       bid_strategy: z.string().optional().describe("Bid strategy: LOWEST_COST_WITHOUT_CAP, LOWEST_COST_WITH_BID_CAP, COST_CAP, LOWEST_COST_WITH_MIN_ROAS"),
       targeting: z.string().describe("JSON string of targeting spec (age_min, age_max, genders, geo_locations, interests, etc.)"),
+      promoted_object: z.string().optional().describe("JSON string of the promoted_object spec. Required for many objectives, e.g. OUTCOME_SALES needs {\"pixel_id\":\"...\",\"custom_event_type\":\"PURCHASE\"}, OUTCOME_APP_PROMOTION needs {\"application_id\":\"...\",\"object_store_url\":\"...\"}, OUTCOME_ENGAGEMENT page-like ads need {\"page_id\":\"...\"}. Omitting it when the objective requires one causes ad set creation to fail."),
       start_time: z.string().optional().describe("Start time (ISO 8601)"),
       end_time: z.string().optional().describe("End time (ISO 8601)"),
       status: z.string().optional().default("PAUSED").describe("Ad set status (default PAUSED)"),
+      account_id: z.string().optional().describe("Ad account ID to create the ad set in (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ name, campaign_id, daily_budget, lifetime_budget, optimization_goal, billing_event, bid_strategy, targeting, start_time, end_time, status }) => {
+    async ({ name, campaign_id, daily_budget, lifetime_budget, optimization_goal, billing_event, bid_strategy, targeting, promoted_object, start_time, end_time, status, account_id }) => {
       try {
         const params: Record<string, unknown> = {
           name,
@@ -80,9 +83,10 @@ export function registerAdsetTools(server: McpServer, client: AdsClient): void {
         if (daily_budget) params.daily_budget = daily_budget;
         if (lifetime_budget) params.lifetime_budget = lifetime_budget;
         if (bid_strategy) params.bid_strategy = bid_strategy;
+        if (promoted_object) params.promoted_object = promoted_object;
         if (start_time) params.start_time = start_time;
         if (end_time) params.end_time = end_time;
-        const { data, rateLimit } = await client.post(`${client.accountPath}/adsets`, params);
+        const { data, rateLimit } = await client.post(`${client.accountPath(account_id)}/adsets`, params);
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };

@@ -11,14 +11,15 @@ export function registerBudgetTools(server: McpServer, client: AdsClient): void 
       fields: z.string().optional().describe("Comma-separated fields to return"),
       limit: z.number().optional().default(25).describe("Number of results (default 25)"),
       after: z.string().optional().describe("Pagination cursor for next page"),
+      account_id: z.string().optional().describe("Ad account ID to query (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ fields, limit, after }) => {
+    async ({ fields, limit, after, account_id }) => {
       try {
         const params: Record<string, unknown> = {};
         if (fields) params.fields = fields;
         if (limit) params.limit = limit;
         if (after) params.after = after;
-        const { data, rateLimit } = await client.get(`${client.accountPath}/adbudgetschedules`, params);
+        const { data, rateLimit } = await client.get(`${client.accountPath(account_id)}/adbudgetschedules`, params);
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
@@ -35,8 +36,9 @@ export function registerBudgetTools(server: McpServer, client: AdsClient): void 
       budget_value_type: z.string().describe("Budget value type (e.g. ABSOLUTE, MULTIPLIER)"),
       time_start: z.string().describe("Schedule start time (ISO 8601 or Unix timestamp)"),
       time_end: z.string().describe("Schedule end time (ISO 8601 or Unix timestamp)"),
+      account_id: z.string().optional().describe("Ad account ID to create the schedule in (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ budget_value, budget_value_type, time_start, time_end }) => {
+    async ({ budget_value, budget_value_type, time_start, time_end, account_id }) => {
       try {
         const params: Record<string, unknown> = {
           budget_value,
@@ -44,7 +46,7 @@ export function registerBudgetTools(server: McpServer, client: AdsClient): void 
           time_start,
           time_end,
         };
-        const { data, rateLimit } = await client.post(`${client.accountPath}/adbudgetschedules`, params);
+        const { data, rateLimit } = await client.post(`${client.accountPath(account_id)}/adbudgetschedules`, params);
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };

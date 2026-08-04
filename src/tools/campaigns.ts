@@ -14,8 +14,9 @@ export function registerCampaignTools(server: McpServer, client: AdsClient): voi
       limit: z.number().optional().default(25).describe("Number of results (default 25)"),
       after: z.string().optional().describe("Pagination cursor for next page"),
       before: z.string().optional().describe("Pagination cursor for previous page"),
+      account_id: z.string().optional().describe("Ad account ID to query (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ status, objective, fields, limit, after, before }) => {
+    async ({ status, objective, fields, limit, after, before, account_id }) => {
       try {
         const params: Record<string, unknown> = {};
         if (fields) params.fields = fields;
@@ -24,7 +25,7 @@ export function registerCampaignTools(server: McpServer, client: AdsClient): voi
         if (before) params.before = before;
         if (status) params.effective_status = `["${status}"]`;
         if (objective) params.objective = objective;
-        const { data, rateLimit } = await client.get(`${client.accountPath}/campaigns`, params);
+        const { data, rateLimit } = await client.get(`${client.accountPath(account_id)}/campaigns`, params);
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
@@ -72,8 +73,12 @@ export function registerCampaignTools(server: McpServer, client: AdsClient): voi
       special_ad_categories: z.string().optional().describe("JSON array of special ad categories: CREDIT, EMPLOYMENT, HOUSING, ISSUES_ELECTIONS_POLITICS"),
       start_time: z.string().optional().describe("Campaign start time (ISO 8601 format)"),
       stop_time: z.string().optional().describe("Campaign stop time (ISO 8601 format)"),
+      bid_strategy: z.string().optional().describe("Bid strategy: LOWEST_COST_WITHOUT_CAP, LOWEST_COST_WITH_BID_CAP, COST_CAP, LOWEST_COST_WITH_MIN_ROAS. Meta defaults new campaigns to LOWEST_COST_WITH_BID_CAP, which requires a bid_amount on every ad set — pass LOWEST_COST_WITHOUT_CAP to avoid that."),
+      spend_cap: z.string().optional().describe("Lifetime spend cap for the campaign, in account currency cents. Once set it cannot be removed, only raised or reset — pass '0' to reset/clear it."),
+      is_adset_budget_sharing_enabled: z.boolean().optional().describe("Whether ad sets under this campaign can share budget with each other. Required on some newer ad accounts — omitting it can cause campaign creation to fail with 'Must specify True or False in is_adset_budget_sharing_enabled'."),
+      account_id: z.string().optional().describe("Ad account ID to create the campaign in (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ name, objective, status, daily_budget, lifetime_budget, special_ad_categories, start_time, stop_time }) => {
+    async ({ name, objective, status, daily_budget, lifetime_budget, special_ad_categories, start_time, stop_time, bid_strategy, spend_cap, is_adset_budget_sharing_enabled, account_id }) => {
       try {
         const params: Record<string, unknown> = { name, objective, status };
         if (daily_budget) params.daily_budget = daily_budget;
@@ -81,7 +86,10 @@ export function registerCampaignTools(server: McpServer, client: AdsClient): voi
         if (special_ad_categories) params.special_ad_categories = special_ad_categories;
         if (start_time) params.start_time = start_time;
         if (stop_time) params.stop_time = stop_time;
-        const { data, rateLimit } = await client.post(`${client.accountPath}/campaigns`, params);
+        if (bid_strategy) params.bid_strategy = bid_strategy;
+        if (spend_cap) params.spend_cap = spend_cap;
+        if (is_adset_budget_sharing_enabled !== undefined) params.is_adset_budget_sharing_enabled = is_adset_budget_sharing_enabled;
+        const { data, rateLimit } = await client.post(`${client.accountPath(account_id)}/campaigns`, params);
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
@@ -101,8 +109,10 @@ export function registerCampaignTools(server: McpServer, client: AdsClient): voi
       lifetime_budget: z.string().optional().describe("New lifetime budget in currency cents"),
       start_time: z.string().optional().describe("New start time (ISO 8601)"),
       stop_time: z.string().optional().describe("New stop time (ISO 8601)"),
+      bid_strategy: z.string().optional().describe("New bid strategy: LOWEST_COST_WITHOUT_CAP, LOWEST_COST_WITH_BID_CAP, COST_CAP, LOWEST_COST_WITH_MIN_ROAS"),
+      spend_cap: z.string().optional().describe("Lifetime spend cap for the campaign, in account currency cents. Once set it cannot be removed, only raised or reset — pass '0' to reset/clear it."),
     },
-    async ({ campaign_id, name, status, daily_budget, lifetime_budget, start_time, stop_time }) => {
+    async ({ campaign_id, name, status, daily_budget, lifetime_budget, start_time, stop_time, bid_strategy, spend_cap }) => {
       try {
         const params: Record<string, unknown> = {};
         if (name) params.name = name;
@@ -111,6 +121,8 @@ export function registerCampaignTools(server: McpServer, client: AdsClient): voi
         if (lifetime_budget) params.lifetime_budget = lifetime_budget;
         if (start_time) params.start_time = start_time;
         if (stop_time) params.stop_time = stop_time;
+        if (bid_strategy) params.bid_strategy = bid_strategy;
+        if (spend_cap) params.spend_cap = spend_cap;
         const { data, rateLimit } = await client.post(`/${campaign_id}`, params);
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {

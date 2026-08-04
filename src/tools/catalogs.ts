@@ -11,10 +11,11 @@ export function registerCatalogTools(server: McpServer, client: AdsClient): void
       fields: z.string().optional().describe("Comma-separated fields to return"),
       limit: z.number().optional().default(25).describe("Number of results to return"),
       after: z.string().optional().describe("Pagination cursor for next page"),
+      account_id: z.string().optional().describe("Ad account ID to query (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async (params) => {
+    async ({ account_id, ...params }) => {
       try {
-        const { data, rateLimit } = await client.get(`${client.accountPath}/product_catalogs`, { ...params });
+        const { data, rateLimit } = await client.get(`${client.accountPath(account_id)}/product_catalogs`, { ...params });
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
@@ -47,10 +48,11 @@ export function registerCatalogTools(server: McpServer, client: AdsClient): void
     {
       name: z.string().describe("Catalog name"),
       vertical: z.string().optional().describe("Catalog vertical: commerce, hotels, flights, destinations, home_listings, vehicles"),
+      account_id: z.string().optional().describe("Ad account ID to create the catalog in (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async (params) => {
+    async ({ account_id, ...params }) => {
       try {
-        const { data, rateLimit } = await client.post(`${client.accountPath}/product_catalogs`, { ...params });
+        const { data, rateLimit } = await client.post(`${client.accountPath(account_id)}/product_catalogs`, { ...params });
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };

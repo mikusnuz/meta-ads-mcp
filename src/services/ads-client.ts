@@ -147,7 +147,14 @@ export class AdsClient {
     }
 
     const res = await fetch(url, init);
+    return this.handleResponse(res, method, path);
+  }
 
+  private async handleResponse(
+    res: Response,
+    method: string,
+    path: string
+  ): Promise<ClientResponse> {
     if (!res.ok) {
       const text = await res.text().catch(() => "");
       let errorMsg: string;
@@ -173,6 +180,40 @@ export class AdsClient {
 
     const text = await res.text();
     return { data: text || { success: true }, rateLimit, businessRateLimit };
+  }
+
+  /**
+   * POST a multipart/form-data request with a binary file attached.
+   * Required for endpoints like /advideos that don't accept base64 bytes
+   * in a JSON body.
+   */
+  async postMultipart(
+    path: string,
+    fields: Record<string, unknown>,
+    file: { buffer: Buffer; fieldName: string; filename: string }
+  ): Promise<ClientResponse> {
+    if (!this.config.accessToken) {
+      throw new Error(
+        "META_ADS_ACCESS_TOKEN is not configured. Set it as an environment variable."
+      );
+    }
+
+    const form = new FormData();
+    form.set("access_token", this.config.accessToken);
+    for (const [k, v] of Object.entries(fields)) {
+      if (v !== undefined && v !== null && v !== "") {
+        form.set(k, String(v));
+      }
+    }
+    const blob = new Blob([new Uint8Array(file.buffer)]);
+    form.set(file.fieldName, blob, file.filename);
+
+    const res = await fetch(`${this.baseUrl}${path}`, {
+      method: "POST",
+      body: form,
+      signal: AbortSignal.timeout(120_000),
+    });
+    return this.handleResponse(res, "POST", path);
   }
 
   // --- Convenience methods ---
@@ -210,8 +251,15 @@ export class AdsClient {
 
   // --- Account helpers ---
 
-  get accountPath(): string {
-    return `/act_${this.accountId}`;
+  /**
+   * Path for the ad account. Pass accountIdOverride to target an account
+   * other than the one configured via META_AD_ACCOUNT_ID (accepts either
+   * "123" or "act_123").
+   */
+  accountPath(accountIdOverride?: string): string {
+    const id = accountIdOverride || this.accountId;
+    const normalized = id.startsWith("act_") ? id.slice(4) : id;
+    return `/act_${normalized}`;
   }
 
   get accountId(): string {

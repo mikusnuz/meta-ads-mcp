@@ -11,14 +11,15 @@ export function registerCreativeTools(server: McpServer, client: AdsClient): voi
       fields: z.string().optional().describe("Comma-separated fields to return"),
       limit: z.number().optional().default(25).describe("Number of results (default 25)"),
       after: z.string().optional().describe("Pagination cursor for next page"),
+      account_id: z.string().optional().describe("Ad account ID to query (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ fields, limit, after }) => {
+    async ({ fields, limit, after, account_id }) => {
       try {
         const params: Record<string, unknown> = {};
         if (fields) params.fields = fields;
         if (limit) params.limit = limit;
         if (after) params.after = after;
-        const { data, rateLimit } = await client.get(`${client.accountPath}/adcreatives`, params);
+        const { data, rateLimit } = await client.get(`${client.accountPath(account_id)}/adcreatives`, params);
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
@@ -55,13 +56,14 @@ export function registerCreativeTools(server: McpServer, client: AdsClient): voi
       object_story_spec: z.string().describe("JSON string of object_story_spec (page_id, link_data/photo_data/video_data)"),
       url_tags: z.string().optional().describe("URL tags to append to all links"),
       asset_feed_spec: z.string().optional().describe("JSON string of asset_feed_spec for dynamic creative"),
+      account_id: z.string().optional().describe("Ad account ID to create the creative in (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ name, object_story_spec, url_tags, asset_feed_spec }) => {
+    async ({ name, object_story_spec, url_tags, asset_feed_spec, account_id }) => {
       try {
         const params: Record<string, unknown> = { name, object_story_spec };
         if (url_tags) params.url_tags = url_tags;
         if (asset_feed_spec) params.asset_feed_spec = asset_feed_spec;
-        const { data, rateLimit } = await client.post(`${client.accountPath}/adcreatives`, params);
+        const { data, rateLimit } = await client.post(`${client.accountPath(account_id)}/adcreatives`, params);
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
@@ -98,11 +100,12 @@ export function registerCreativeTools(server: McpServer, client: AdsClient): voi
     {
       name: z.string().describe("Creative name"),
       asset_feed_spec: z.string().describe("JSON string of asset_feed_spec with arrays: images (hash), videos (video_id), bodies (text), titles (text), descriptions (text), call_to_action_types"),
+      account_id: z.string().optional().describe("Ad account ID to create the creative in (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ name, asset_feed_spec }) => {
+    async ({ name, asset_feed_spec, account_id }) => {
       try {
         const params: Record<string, unknown> = { name, asset_feed_spec };
-        const { data, rateLimit } = await client.post(`${client.accountPath}/adcreatives`, params);
+        const { data, rateLimit } = await client.post(`${client.accountPath(account_id)}/adcreatives`, params);
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
@@ -117,10 +120,11 @@ export function registerCreativeTools(server: McpServer, client: AdsClient): voi
     {
       ad_format: z.string().describe("Ad format: DESKTOP_FEED_STANDARD, MOBILE_FEED_STANDARD, INSTAGRAM_STANDARD, INSTAGRAM_STORY, RIGHT_COLUMN_STANDARD, etc."),
       creative: z.string().describe("JSON string of creative spec: {object_story_spec: {...}} or {object_story_id: '...'}"),
+      account_id: z.string().optional().describe("Ad account ID to generate the preview in (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ ad_format, creative }) => {
+    async ({ ad_format, creative, account_id }) => {
       try {
-        const { data, rateLimit } = await client.get(`${client.accountPath}/generatepreviews`, { ad_format, creative });
+        const { data, rateLimit } = await client.get(`${client.accountPath(account_id)}/generatepreviews`, { ad_format, creative });
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };

@@ -9,12 +9,13 @@ export function registerAccountTools(server: McpServer, client: AdsClient): void
     "Get details of the configured ad account including status, balance, currency, timezone, and spend info.",
     {
       fields: z.string().optional().default("id,name,account_status,balance,currency,timezone_name,amount_spent,business_name,business_city,business_country_code,owner,min_campaign_group_spend_cap").describe("Comma-separated fields to return"),
+      account_id: z.string().optional().describe("Ad account ID to query (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ fields }) => {
+    async ({ fields, account_id }) => {
       try {
         const params: Record<string, unknown> = {};
         if (fields) params.fields = fields;
-        const { data, rateLimit } = await client.get(`${client.accountPath}`, params);
+        const { data, rateLimit } = await client.get(`${client.accountPath(account_id)}`, params);
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
@@ -53,14 +54,15 @@ export function registerAccountTools(server: McpServer, client: AdsClient): void
       name: z.string().optional().describe("New account name"),
       timezone_name: z.string().optional().describe("New timezone (e.g. 'America/New_York')"),
       spend_cap: z.string().optional().describe("Account spend cap in currency cents (e.g. '100000' = $1000.00)"),
+      account_id: z.string().optional().describe("Ad account ID to update (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ name, timezone_name, spend_cap }) => {
+    async ({ name, timezone_name, spend_cap, account_id }) => {
       try {
         const params: Record<string, unknown> = {};
         if (name) params.name = name;
         if (timezone_name) params.timezone_name = timezone_name;
         if (spend_cap) params.spend_cap = spend_cap;
-        const { data, rateLimit } = await client.post(`${client.accountPath}`, params);
+        const { data, rateLimit } = await client.post(`${client.accountPath(account_id)}`, params);
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
@@ -76,14 +78,15 @@ export function registerAccountTools(server: McpServer, client: AdsClient): void
       fields: z.string().optional().describe("Comma-separated fields to return"),
       limit: z.number().optional().default(25).describe("Number of results (default 25)"),
       after: z.string().optional().describe("Pagination cursor for next page"),
+      account_id: z.string().optional().describe("Ad account ID to query (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ fields, limit, after }) => {
+    async ({ fields, limit, after, account_id }) => {
       try {
         const params: Record<string, unknown> = {};
         if (fields) params.fields = fields;
         if (limit) params.limit = limit;
         if (after) params.after = after;
-        const { data, rateLimit } = await client.get(`${client.accountPath}/activities`, params);
+        const { data, rateLimit } = await client.get(`${client.accountPath(account_id)}/activities`, params);
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
@@ -99,14 +102,15 @@ export function registerAccountTools(server: McpServer, client: AdsClient): void
       fields: z.string().optional().describe("Comma-separated fields to return"),
       limit: z.number().optional().default(25).describe("Number of results (default 25)"),
       after: z.string().optional().describe("Pagination cursor for next page"),
+      account_id: z.string().optional().describe("Ad account ID to query (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ fields, limit, after }) => {
+    async ({ fields, limit, after, account_id }) => {
       try {
         const params: Record<string, unknown> = {};
         if (fields) params.fields = fields;
         if (limit) params.limit = limit;
         if (after) params.after = after;
-        const { data, rateLimit } = await client.get(`${client.accountPath}/users`, params);
+        const { data, rateLimit } = await client.get(`${client.accountPath(account_id)}/users`, params);
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };

@@ -17,10 +17,13 @@ export function registerInsightTools(server: McpServer, client: AdsClient): void
   server.tool(
     "get_account_insights",
     "Get performance insights for the ad account. Returns metrics like impressions, clicks, spend, reach, etc.",
-    { ...insightParams },
-    async (params) => {
+    {
+      ...insightParams,
+      account_id: z.string().optional().describe("Ad account ID to query (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
+    },
+    async ({ account_id, ...params }) => {
       try {
-        const { data, rateLimit } = await client.get(`${client.accountPath}/insights`, { ...params });
+        const { data, rateLimit } = await client.get(`${client.accountPath(account_id)}/insights`, { ...params });
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
@@ -86,10 +89,13 @@ export function registerInsightTools(server: McpServer, client: AdsClient): void
   server.tool(
     "create_async_report",
     "Create an async insight report for large data queries. Returns a report_run_id to poll with get_async_report.",
-    { ...insightParams },
-    async (params) => {
+    {
+      ...insightParams,
+      account_id: z.string().optional().describe("Ad account ID to query (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
+    },
+    async ({ account_id, ...params }) => {
       try {
-        const { data, rateLimit } = await client.post(`${client.accountPath}/insights`, { ...params });
+        const { data, rateLimit } = await client.post(`${client.accountPath(account_id)}/insights`, { ...params });
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
