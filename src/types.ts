@@ -42,6 +42,7 @@ export interface Campaign {
   lifetime_budget?: string;
   budget_remaining?: string;
   special_ad_categories?: string[];
+  special_ad_category_country?: string[];
   created_time?: string;
   updated_time?: string;
   start_time?: string;
@@ -88,19 +89,53 @@ export interface AdSet {
 
 export type AdSetStatus = "ACTIVE" | "PAUSED" | "DELETED" | "ARCHIVED";
 
-export type BillingEvent = "IMPRESSIONS" | "LINK_CLICKS" | "APP_INSTALLS" | "THRUPLAY";
+export type BillingEvent =
+  | "APP_INSTALLS"
+  | "CLICKS"
+  | "IMPRESSIONS"
+  | "LINK_CLICKS"
+  | "NONE"
+  | "OFFER_CLAIMS"
+  | "PAGE_LIKES"
+  | "POST_ENGAGEMENT"
+  | "THRUPLAY"
+  | "PURCHASE"
+  | "LISTING_INTERACTION";
 
 export type OptimizationGoal =
-  | "IMPRESSIONS"
-  | "REACH"
-  | "LINK_CLICKS"
-  | "LANDING_PAGE_VIEWS"
-  | "OFFSITE_CONVERSIONS"
+  | "NONE"
   | "APP_INSTALLS"
+  | "AD_RECALL_LIFT"
+  | "ENGAGED_USERS"
+  | "EVENT_RESPONSES"
+  | "IMPRESSIONS"
   | "LEAD_GENERATION"
+  | "QUALITY_LEAD"
+  | "LINK_CLICKS"
+  | "OFFSITE_CONVERSIONS"
+  | "PAGE_LIKES"
+  | "POST_ENGAGEMENT"
+  | "QUALITY_CALL"
+  | "REACH"
+  | "LANDING_PAGE_VIEWS"
+  | "VISIT_INSTAGRAM_PROFILE"
+  | "ENGAGED_PAGE_VIEWS"
   | "VALUE"
   | "THRUPLAY"
-  | "ENGAGED_USERS";
+  | "DERIVED_EVENTS"
+  | "APP_INSTALLS_AND_OFFSITE_CONVERSIONS"
+  | "CONVERSATIONS"
+  | "IN_APP_VALUE"
+  | "MESSAGING_PURCHASE_CONVERSION"
+  | "MESSAGING_DEEP_CONVERSATION_AND_FOLLOW"
+  | "SUBSCRIBERS"
+  | "REMINDERS_SET"
+  | "MEANINGFUL_CALL_ATTEMPT"
+  | "PROFILE_VISIT"
+  | "PROFILE_AND_PAGE_ENGAGEMENT"
+  | "ADVERTISER_SILOED_VALUE"
+  | "AUTOMATIC_OBJECTIVE"
+  | "MESSAGING_APPOINTMENT_CONVERSION";
 
 // --- Targeting types ---
 
@@ -117,8 +152,17 @@ export interface Targeting {
   publisher_platforms?: string[];
   facebook_positions?: string[];
   instagram_positions?: string[];
+  messenger_positions?: string[];
+  threads_positions?: string[];
+  whatsapp_positions?: string[];
   device_platforms?: string[];
   locales?: number[];
+  targeting_automation?: TargetingAutomation;
+}
+
+export interface TargetingAutomation {
+  advantage_audience?: 0 | 1;
+  individual_setting?: Record<string, 0 | 1>;
 }
 
 export interface GeoLocation {

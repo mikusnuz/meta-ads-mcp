@@ -165,16 +165,16 @@ export function registerAdTools(server: McpServer, client: AdsClient): void {
   // ─── get_delivery_estimate ─────────────────────────────────
   server.tool(
     "get_delivery_estimate",
-    "Get delivery estimate for an ad including estimated daily reach and cost. Note: as of v26.0, the daily_outcomes_curve, budget_guardrail, and estimate_dau fields are no longer returned (removed with no replacement).",
+    "Get delivery estimate for an ad set, including estimated daily reach. Note: the delivery_estimate edge exists on the ad set (and ad account) node, not on individual ads. Also note: as of v26.0, the daily_outcomes_curve, budget_guardrail, and estimate_dau fields are no longer returned (removed with no replacement).",
     {
-      ad_id: z.string().describe("Ad ID"),
+      adset_id: z.string().describe("Ad Set ID"),
       optimization_goal: z.string().optional().describe("Optimization goal to estimate for"),
     },
-    async ({ ad_id, optimization_goal }) => {
+    async ({ adset_id, optimization_goal }) => {
       try {
         const params: Record<string, unknown> = {};
         if (optimization_goal) params.optimization_goal = optimization_goal;
-        const { data, rateLimit } = await client.get(`/${ad_id}/delivery_estimate`, params);
+        const { data, rateLimit } = await client.get(`/${adset_id}/delivery_estimate`, params);
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };

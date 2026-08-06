@@ -83,7 +83,7 @@ Use this MCP when you need to:
 | `delete_ad` | Delete an ad |
 | `copy_ad` | Copy an existing ad to same or different ad set |
 | `get_ad_preview` | Generate ad preview HTML |
-| `get_delivery_estimate` | Get delivery estimate for an ad |
+| `get_delivery_estimate` | Get delivery estimate for an ad set |
 
 ### Creatives (6)
 

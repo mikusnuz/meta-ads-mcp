@@ -81,7 +81,7 @@
 | `delete_ad` | 광고 삭제 |
 | `copy_ad` | 기존 광고 복제 (같은/다른 광고 세트로) |
 | `get_ad_preview` | 광고 미리보기 HTML 생성 |
-| `get_delivery_estimate` | 광고 전달 예측 조회 |
+| `get_delivery_estimate` | 광고 세트 전달 예측 조회 |
 
 ### 크리에이티브 (6)
 

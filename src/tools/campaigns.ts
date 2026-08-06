@@ -70,7 +70,8 @@ export function registerCampaignTools(server: McpServer, client: AdsClient): voi
       status: z.string().optional().default("PAUSED").describe("Campaign status (default PAUSED)"),
       daily_budget: z.string().optional().describe("Daily budget in account currency cents (e.g. '5000' = $50.00)"),
       lifetime_budget: z.string().optional().describe("Lifetime budget in account currency cents"),
-      special_ad_categories: z.string().optional().describe("JSON array of special ad categories: CREDIT, EMPLOYMENT, HOUSING, ISSUES_ELECTIONS_POLITICS"),
+      special_ad_categories: z.string().optional().describe("JSON array of special ad categories: HOUSING, EMPLOYMENT, FINANCIAL_PRODUCTS_SERVICES, ISSUES_ELECTIONS_POLITICS, NONE. This field is required by Meta on every campaign — pass '[]' or '[\"NONE\"]' if none apply. CREDIT was renamed to FINANCIAL_PRODUCTS_SERVICES; the old name is no longer accepted."),
+      special_ad_category_country: z.string().optional().describe("JSON array of ISO 3166-1 alpha-2 country codes, e.g. '[\"US\"]'. Required when special_ad_categories is set to a non-NONE value (most notably ISSUES_ELECTIONS_POLITICS, which requires authorization to run ads in the specified countries)."),
       start_time: z.string().optional().describe("Campaign start time (ISO 8601 format)"),
       stop_time: z.string().optional().describe("Campaign stop time (ISO 8601 format)"),
       bid_strategy: z.string().optional().describe("Bid strategy: LOWEST_COST_WITHOUT_CAP, LOWEST_COST_WITH_BID_CAP, COST_CAP, LOWEST_COST_WITH_MIN_ROAS. Meta defaults new campaigns to LOWEST_COST_WITH_BID_CAP, which requires a bid_amount on every ad set — pass LOWEST_COST_WITHOUT_CAP to avoid that."),
@@ -78,12 +79,13 @@ export function registerCampaignTools(server: McpServer, client: AdsClient): voi
       is_adset_budget_sharing_enabled: z.boolean().optional().describe("Whether ad sets under this campaign can share budget with each other. Required on some newer ad accounts — omitting it can cause campaign creation to fail with 'Must specify True or False in is_adset_budget_sharing_enabled'."),
       account_id: z.string().optional().describe("Ad account ID to create the campaign in (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ name, objective, status, daily_budget, lifetime_budget, special_ad_categories, start_time, stop_time, bid_strategy, spend_cap, is_adset_budget_sharing_enabled, account_id }) => {
+    async ({ name, objective, status, daily_budget, lifetime_budget, special_ad_categories, special_ad_category_country, start_time, stop_time, bid_strategy, spend_cap, is_adset_budget_sharing_enabled, account_id }) => {
       try {
         const params: Record<string, unknown> = { name, objective, status };
         if (daily_budget) params.daily_budget = daily_budget;
         if (lifetime_budget) params.lifetime_budget = lifetime_budget;
         if (special_ad_categories) params.special_ad_categories = special_ad_categories;
+        if (special_ad_category_country) params.special_ad_category_country = special_ad_category_country;
         if (start_time) params.start_time = start_time;
         if (stop_time) params.stop_time = stop_time;
         if (bid_strategy) params.bid_strategy = bid_strategy;

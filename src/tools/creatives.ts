@@ -53,7 +53,7 @@ export function registerCreativeTools(server: McpServer, client: AdsClient): voi
     "Create a new ad creative with object_story_spec. The spec defines the ad content (link, photo, or video) and the associated Facebook Page. Notes for v26.0: poll_spec and the poll type under interactive_components_spec are no longer supported and will be rejected. If the advertiser has a shop, eligible creatives now default to destination_spec.destination_type=WEBSITE_AND_SHOP — set it to WEBSITE_AND_SHOP_OPT_OUT to opt out.",
     {
       name: z.string().describe("Creative name"),
-      object_story_spec: z.string().describe("JSON string of object_story_spec (page_id, link_data/photo_data/video_data)"),
+      object_story_spec: z.string().describe("JSON string of object_story_spec (page_id, link_data/photo_data/video_data). As of v26.0, it can also include wamo_whatsapp_identity_spec to deliver ads in WhatsApp Status (Offsite-conversion optimization is supported for Sales, Leads, Engagement, and Landing Page Views)."),
       url_tags: z.string().optional().describe("URL tags to append to all links"),
       asset_feed_spec: z.string().optional().describe("JSON string of asset_feed_spec for dynamic creative"),
       account_id: z.string().optional().describe("Ad account ID to create the creative in (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
