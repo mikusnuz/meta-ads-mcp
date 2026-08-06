@@ -9,7 +9,7 @@ interface ClientResponse {
 
 export class AdsClient {
   private config: AdsConfig;
-  private baseUrl = "https://graph.facebook.com/v25.0";
+  private baseUrl = "https://graph.facebook.com/v26.0";
 
   constructor(config: AdsConfig) {
     this.config = config;

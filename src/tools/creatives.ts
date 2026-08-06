@@ -50,7 +50,7 @@ export function registerCreativeTools(server: McpServer, client: AdsClient): voi
   // ─── create_creative ───────────────────────────────────────
   server.tool(
     "create_creative",
-    "Create a new ad creative with object_story_spec. The spec defines the ad content (link, photo, or video) and the associated Facebook Page.",
+    "Create a new ad creative with object_story_spec. The spec defines the ad content (link, photo, or video) and the associated Facebook Page. Notes for v26.0: poll_spec and the poll type under interactive_components_spec are no longer supported and will be rejected. If the advertiser has a shop, eligible creatives now default to destination_spec.destination_type=WEBSITE_AND_SHOP — set it to WEBSITE_AND_SHOP_OPT_OUT to opt out.",
     {
       name: z.string().describe("Creative name"),
       object_story_spec: z.string().describe("JSON string of object_story_spec (page_id, link_data/photo_data/video_data)"),

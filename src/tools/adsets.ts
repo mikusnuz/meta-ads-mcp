@@ -63,14 +63,15 @@ export function registerAdsetTools(server: McpServer, client: AdsClient): void {
       optimization_goal: z.string().describe("Optimization goal: IMPRESSIONS, REACH, LINK_CLICKS, LANDING_PAGE_VIEWS, OFFSITE_CONVERSIONS, APP_INSTALLS, LEAD_GENERATION, VALUE, THRUPLAY, ENGAGED_USERS"),
       billing_event: z.string().describe("Billing event: IMPRESSIONS, LINK_CLICKS, APP_INSTALLS, THRUPLAY"),
       bid_strategy: z.string().optional().describe("Bid strategy: LOWEST_COST_WITHOUT_CAP, LOWEST_COST_WITH_BID_CAP, COST_CAP, LOWEST_COST_WITH_MIN_ROAS"),
-      targeting: z.string().describe("JSON string of targeting spec (age_min, age_max, genders, geo_locations, interests, etc.)"),
+      targeting: z.string().describe("JSON string of targeting spec (age_min, age_max, genders, geo_locations, interests, etc.). Note: as of Marketing API v26.0, the Instagram Explore Feed placement was removed (explicitly specifying it now returns an error) and the 'story' value in messenger_positions is silently dropped."),
+      targeting_automation: z.string().optional().describe("JSON string, e.g. '{\"advantage_audience\":1}'. As of v26.0, ad sets in the Housing, Employment, or Financial Products and Services (HEC-F) special ad categories with relaxable (non-broad) targeting must explicitly set advantage_audience to 1 or 0 — omitting it now returns ADS_TARGETING__REQUIRE_EXPLICIT_ADVANTAGE_AUDIENCE_FLAG. Not required for broad/default audience setups."),
       promoted_object: z.string().optional().describe("JSON string of the promoted_object spec. Required for many objectives, e.g. OUTCOME_SALES needs {\"pixel_id\":\"...\",\"custom_event_type\":\"PURCHASE\"}, OUTCOME_APP_PROMOTION needs {\"application_id\":\"...\",\"object_store_url\":\"...\"}, OUTCOME_ENGAGEMENT page-like ads need {\"page_id\":\"...\"}. Omitting it when the objective requires one causes ad set creation to fail."),
       start_time: z.string().optional().describe("Start time (ISO 8601)"),
       end_time: z.string().optional().describe("End time (ISO 8601)"),
       status: z.string().optional().default("PAUSED").describe("Ad set status (default PAUSED)"),
       account_id: z.string().optional().describe("Ad account ID to create the ad set in (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ name, campaign_id, daily_budget, lifetime_budget, optimization_goal, billing_event, bid_strategy, targeting, promoted_object, start_time, end_time, status, account_id }) => {
+    async ({ name, campaign_id, daily_budget, lifetime_budget, optimization_goal, billing_event, bid_strategy, targeting, targeting_automation, promoted_object, start_time, end_time, status, account_id }) => {
       try {
         const params: Record<string, unknown> = {
           name,
@@ -83,6 +84,7 @@ export function registerAdsetTools(server: McpServer, client: AdsClient): void {
         if (daily_budget) params.daily_budget = daily_budget;
         if (lifetime_budget) params.lifetime_budget = lifetime_budget;
         if (bid_strategy) params.bid_strategy = bid_strategy;
+        if (targeting_automation) params.targeting_automation = targeting_automation;
         if (promoted_object) params.promoted_object = promoted_object;
         if (start_time) params.start_time = start_time;
         if (end_time) params.end_time = end_time;
@@ -104,12 +106,13 @@ export function registerAdsetTools(server: McpServer, client: AdsClient): void {
       status: z.string().optional().describe("New status: ACTIVE, PAUSED, DELETED, ARCHIVED"),
       daily_budget: z.string().optional().describe("New daily budget in currency cents"),
       lifetime_budget: z.string().optional().describe("New lifetime budget in currency cents"),
-      targeting: z.string().optional().describe("New targeting spec as JSON string"),
+      targeting: z.string().optional().describe("New targeting spec as JSON string. Note: the Instagram Explore Feed placement was removed in Marketing API v26.0 — requests that explicitly include it now return an error."),
+      targeting_automation: z.string().optional().describe("JSON string, e.g. '{\"advantage_audience\":1}'. As of v26.0, HEC-F (Housing/Employment/Financial Products and Services) ad sets with relaxable, non-broad targeting must set advantage_audience explicitly."),
       start_time: z.string().optional().describe("New start time (ISO 8601)"),
       end_time: z.string().optional().describe("New end time (ISO 8601)"),
       bid_amount: z.string().optional().describe("New bid amount in currency cents"),
     },
-    async ({ adset_id, name, status, daily_budget, lifetime_budget, targeting, start_time, end_time, bid_amount }) => {
+    async ({ adset_id, name, status, daily_budget, lifetime_budget, targeting, targeting_automation, start_time, end_time, bid_amount }) => {
       try {
         const params: Record<string, unknown> = {};
         if (name) params.name = name;
@@ -117,6 +120,7 @@ export function registerAdsetTools(server: McpServer, client: AdsClient): void {
         if (daily_budget) params.daily_budget = daily_budget;
         if (lifetime_budget) params.lifetime_budget = lifetime_budget;
         if (targeting) params.targeting = targeting;
+        if (targeting_automation) params.targeting_automation = targeting_automation;
         if (start_time) params.start_time = start_time;
         if (end_time) params.end_time = end_time;
         if (bid_amount) params.bid_amount = bid_amount;

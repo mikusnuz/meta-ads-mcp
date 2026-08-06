@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/@mikusnuz/meta-ads-mcp.svg)](https://www.npmjs.com/package/@mikusnuz/meta-ads-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-MCP server for the **Meta Marketing API v25.0** — 135 tools for managing Facebook & Instagram ad campaigns, audiences, creatives, insights, catalogs, and more.
+MCP server for the **Meta Marketing API v26.0** — 135 tools for managing Facebook & Instagram ad campaigns, audiences, creatives, insights, catalogs, and more.
 
 ## When to Use
 
@@ -101,11 +101,11 @@ Use this MCP when you need to:
 | Tool | Description |
 |---|---|
 | `list_images` | List ad images |
-| `upload_image` | Upload an image from URL |
+| `upload_image` | Upload an image from a URL or local file |
 | `get_image` | Get image details |
 | `delete_image` | Delete an image |
 | `list_videos` | List ad videos |
-| `upload_video` | Upload a video from URL |
+| `upload_video` | Upload a video from a URL or local file |
 | `get_video` | Get video details |
 | `delete_video` | Delete a video |
 | `list_canvases` | List Instant Experience canvases |

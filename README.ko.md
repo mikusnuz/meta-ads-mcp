@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/@mikusnuz/meta-ads-mcp.svg)](https://www.npmjs.com/package/@mikusnuz/meta-ads-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Meta Marketing API v25.0** MCP 서버 — Facebook & Instagram 광고 캠페인 관리를 위한 135개 도구를 제공합니다.
+**Meta Marketing API v26.0** MCP 서버 — Facebook & Instagram 광고 캠페인 관리를 위한 135개 도구를 제공합니다.
 
 ## 이런 경우에 사용하세요
 
@@ -99,11 +99,11 @@
 | 도구 | 설명 |
 |---|---|
 | `list_images` | 광고 이미지 목록 조회 |
-| `upload_image` | URL에서 이미지 업로드 |
+| `upload_image` | URL 또는 로컬 파일에서 이미지 업로드 |
 | `get_image` | 이미지 상세 조회 |
 | `delete_image` | 이미지 삭제 |
 | `list_videos` | 광고 동영상 목록 조회 |
-| `upload_video` | URL에서 동영상 업로드 |
+| `upload_video` | URL 또는 로컬 파일에서 동영상 업로드 |
 | `get_video` | 동영상 상세 조회 |
 | `delete_video` | 동영상 삭제 |
 | `list_canvases` | Instant Experience 캔버스 목록 조회 |
