@@ -63,6 +63,9 @@ export function registerAdsetTools(server: McpServer, client: AdsClient): void {
       optimization_goal: z.string().describe("Optimization goal: NONE, APP_INSTALLS, AD_RECALL_LIFT, ENGAGED_USERS, EVENT_RESPONSES, IMPRESSIONS, LEAD_GENERATION, QUALITY_LEAD, LINK_CLICKS, OFFSITE_CONVERSIONS, PAGE_LIKES, POST_ENGAGEMENT, QUALITY_CALL, REACH, LANDING_PAGE_VIEWS, VISIT_INSTAGRAM_PROFILE, ENGAGED_PAGE_VIEWS, VALUE, THRUPLAY, DERIVED_EVENTS, APP_INSTALLS_AND_OFFSITE_CONVERSIONS, CONVERSATIONS, IN_APP_VALUE, MESSAGING_PURCHASE_CONVERSION, MESSAGING_DEEP_CONVERSATION_AND_FOLLOW, SUBSCRIBERS, REMINDERS_SET, MEANINGFUL_CALL_ATTEMPT, PROFILE_VISIT, PROFILE_AND_PAGE_ENGAGEMENT, ADVERTISER_SILOED_VALUE, AUTOMATIC_OBJECTIVE, MESSAGING_APPOINTMENT_CONVERSION"),
       billing_event: z.string().describe("Billing event: APP_INSTALLS, CLICKS, IMPRESSIONS, LINK_CLICKS, NONE, OFFER_CLAIMS, PAGE_LIKES, POST_ENGAGEMENT, THRUPLAY, PURCHASE, LISTING_INTERACTION"),
       bid_strategy: z.string().optional().describe("Bid strategy: LOWEST_COST_WITHOUT_CAP, LOWEST_COST_WITH_BID_CAP, COST_CAP, LOWEST_COST_WITH_MIN_ROAS"),
+      bid_amount: z.string().optional().describe("Bid amount/cap in currency cents. Required when bid_strategy is LOWEST_COST_WITH_BID_CAP or COST_CAP."),
+      dsa_beneficiary: z.string().optional().describe("EU DSA: name of the person or organisation that benefits from the ads. Required for ad sets delivering to the EU; omitting it returns error subcode 3858081."),
+      dsa_payor: z.string().optional().describe("EU DSA: name of the person or organisation that pays for the ads. Required for ad sets delivering to the EU. Defaults to dsa_beneficiary on Meta's side if omitted."),
       targeting: z.string().describe("JSON string of targeting spec (age_min, age_max, genders, geo_locations, interests, etc.). Advantage+ Audience automation and other flags go inside this object too, e.g. targeting_automation: {\"advantage_audience\":1}. As of v26.0, ad sets in the Housing, Employment, or Financial Products and Services (HEC-F) special ad categories with relaxable (non-broad) targeting must explicitly set targeting.targeting_automation.advantage_audience to 1 or 0 — omitting it now returns ADS_TARGETING__REQUIRE_EXPLICIT_ADVANTAGE_AUDIENCE_FLAG. Not required for broad/default audience setups. Also note: as of Marketing API v26.0, the Instagram Explore Feed placement was removed (explicitly specifying it in publisher_platforms/instagram_positions now returns an error) and the 'story' value in messenger_positions is silently dropped."),
       promoted_object: z.string().optional().describe("JSON string of the promoted_object spec. Required for many objectives, e.g. OUTCOME_SALES needs {\"pixel_id\":\"...\",\"custom_event_type\":\"PURCHASE\"}, OUTCOME_APP_PROMOTION needs {\"application_id\":\"...\",\"object_store_url\":\"...\"}, OUTCOME_ENGAGEMENT page-like ads need {\"page_id\":\"...\"}. Omitting it when the objective requires one causes ad set creation to fail."),
       start_time: z.string().optional().describe("Start time (ISO 8601)"),
@@ -70,7 +73,7 @@ export function registerAdsetTools(server: McpServer, client: AdsClient): void {
       status: z.string().optional().default("PAUSED").describe("Ad set status (default PAUSED)"),
       account_id: z.string().optional().describe("Ad account ID to create the ad set in (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ name, campaign_id, daily_budget, lifetime_budget, optimization_goal, billing_event, bid_strategy, targeting, promoted_object, start_time, end_time, status, account_id }) => {
+    async ({ name, campaign_id, daily_budget, lifetime_budget, optimization_goal, billing_event, bid_strategy, bid_amount, dsa_beneficiary, dsa_payor, targeting, promoted_object, start_time, end_time, status, account_id }) => {
       try {
         const params: Record<string, unknown> = {
           name,
@@ -83,6 +86,9 @@ export function registerAdsetTools(server: McpServer, client: AdsClient): void {
         if (daily_budget) params.daily_budget = daily_budget;
         if (lifetime_budget) params.lifetime_budget = lifetime_budget;
         if (bid_strategy) params.bid_strategy = bid_strategy;
+        if (bid_amount) params.bid_amount = bid_amount;
+        if (dsa_beneficiary) params.dsa_beneficiary = dsa_beneficiary;
+        if (dsa_payor) params.dsa_payor = dsa_payor;
         if (promoted_object) params.promoted_object = promoted_object;
         if (start_time) params.start_time = start_time;
         if (end_time) params.end_time = end_time;
