@@ -1,5 +1,6 @@
 import { AdsConfig } from "../config.js";
 import { RateLimit, BusinessRateLimit } from "../types.js";
+import { buildFacebookTokenExchangeParams } from "./api-contracts.js";
 
 interface ClientResponse {
   data: unknown;
@@ -293,17 +294,11 @@ export class AdsClient {
 
   /** Exchange short-lived token for long-lived token */
   async exchangeToken(shortToken: string): Promise<ClientResponse> {
-    if (!this.config.appId || !this.config.appSecret) {
-      throw new Error(
-        "META_APP_ID and META_APP_SECRET are required for token exchange."
-      );
-    }
-    const qs = new URLSearchParams({
-      grant_type: "fb_exchange_token",
-      client_id: this.config.appId,
-      client_secret: this.config.appSecret,
-      fb_exchange_token: shortToken,
-    });
+    const qs = buildFacebookTokenExchangeParams(
+      shortToken,
+      this.config.appId,
+      this.config.appSecret
+    );
     const url = `${this.baseUrl}/oauth/access_token?${qs.toString()}`;
     const res = await fetch(url, { signal: AbortSignal.timeout(30_000) });
 
@@ -319,25 +314,9 @@ export class AdsClient {
     return { data };
   }
 
-  /** Refresh a long-lived token */
+  /** Extend a valid long-lived user token through the documented exchange flow. */
   async refreshToken(longToken: string): Promise<ClientResponse> {
-    const qs = new URLSearchParams({
-      grant_type: "fb_exchange_token",
-      access_token: longToken,
-    });
-    const url = `${this.baseUrl}/oauth/access_token?${qs.toString()}`;
-    const res = await fetch(url, { signal: AbortSignal.timeout(30_000) });
-
-    if (!res.ok) {
-      const text = await res.text().catch(() => "");
-      throw new Error(`Token refresh failed (${res.status}): ${text}`);
-    }
-
-    const data = await res.json();
-    if (data.error) {
-      throw new Error(this.formatError(data));
-    }
-    return { data };
+    return this.exchangeToken(longToken);
   }
 
   /** Debug a token to inspect its properties */

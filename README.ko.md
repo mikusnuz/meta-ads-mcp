@@ -45,8 +45,8 @@
 |---|---|---|
 | `META_ADS_ACCESS_TOKEN` | **필수** | Meta Marketing API 액세스 토큰 |
 | `META_AD_ACCOUNT_ID` | **필수** | 광고 계정 ID (숫자, `act_` 접두사 없이) |
-| `META_APP_ID` | 선택 | 앱 ID — 토큰 교환/디버그에 필요 |
-| `META_APP_SECRET` | 선택 | 앱 시크릿 — 토큰 교환/디버그에 필요 |
+| `META_APP_ID` | 선택 | 앱 ID — 토큰 교환·연장/디버그에 필요 |
+| `META_APP_SECRET` | 선택 | 앱 시크릿 — 토큰 교환·연장/디버그에 필요 |
 | `META_BUSINESS_ID` | 선택 | 비즈니스 매니저 ID — 비즈니스 도구에 필요 |
 | `META_PIXEL_ID` | 선택 | 픽셀 ID — 전환 도구에 필요 |
 
@@ -141,7 +141,9 @@
 | `get_adset_insights` | 광고 세트 수준 성과 지표 |
 | `get_ad_insights` | 광고 수준 성과 지표 |
 | `create_async_report` | 비동기 인사이트 보고서 생성 |
-| `get_async_report` | 비동기 보고서 상태 및 결과 조회 |
+| `get_async_report` | 보고서 실행 상태 확인 후 완료 시 `/insights` 결과 조회 |
+
+`date_preset` 값은 `today`, `yesterday`, `last_7d`, `last_30d`처럼 Graph API의 소문자 식별자를 사용합니다. `create_async_report`는 항상 비동기 작업을 만들고, `get_async_report`는 상태를 즉시 반환하며 기본적으로 상태가 `Job Completed`가 된 뒤 페이지네이션된 결과 엣지를 조회합니다.
 
 ### 리드 (5)
 
@@ -208,8 +210,8 @@
 
 | 도구 | 설명 |
 |---|---|
-| `list_budget_schedules` | 예산 스케줄 목록 조회 |
-| `create_budget_schedule` | 예산 스케줄 생성 |
+| `list_budget_schedules` | 캠페인 또는 광고 세트의 `budget_schedules` 엣지 조회 |
+| `create_budget_schedule` | 캠페인 또는 광고 세트에 예산 스케줄 생성 |
 | `update_budget_schedule` | 예산 스케줄 수정 |
 | `delete_budget_schedule` | 예산 스케줄 삭제 |
 | `list_rf_predictions` | 도달 & 빈도 예측 목록 조회 |
@@ -252,7 +254,7 @@
 | 도구 | 설명 |
 |---|---|
 | `exchange_token` | 단기 토큰을 장기 토큰으로 교환 |
-| `refresh_token` | 장기 토큰 갱신 |
+| `refresh_token` | 공식 토큰 교환 흐름으로 유효한 장기 사용자 토큰 연장 |
 | `debug_token` | 토큰 메타데이터 디버그/검사 |
 
 ### 광고 라이브러리 (1)

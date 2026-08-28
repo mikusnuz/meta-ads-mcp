@@ -1,25 +1,30 @@
 import { z } from "zod";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { AdsClient } from "../services/ads-client.js";
+import { buildBudgetSchedulePath } from "../services/api-contracts.js";
 
 export function registerBudgetTools(server: McpServer, client: AdsClient): void {
   // ─── list_budget_schedules ────────────────────────────────────
   server.tool(
     "list_budget_schedules",
-    "List ad budget schedules for the ad account. Returns paginated results.",
+    "List budget schedules attached to a campaign or ad set. Returns paginated results.",
     {
+      parent_id: z.string().min(1).describe("Campaign or ad set ID that owns the budget schedules"),
+      parent_type: z.enum(["campaign", "adset"]).default("campaign").describe("Type of parent object"),
       fields: z.string().optional().describe("Comma-separated fields to return"),
-      limit: z.number().optional().default(25).describe("Number of results (default 25)"),
+      limit: z.number().int().positive().optional().default(25).describe("Number of results (default 25)"),
       after: z.string().optional().describe("Pagination cursor for next page"),
-      account_id: z.string().optional().describe("Ad account ID to query (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
     },
-    async ({ fields, limit, after, account_id }) => {
+    async ({ parent_id, parent_type, fields, limit, after }) => {
       try {
         const params: Record<string, unknown> = {};
         if (fields) params.fields = fields;
         if (limit) params.limit = limit;
         if (after) params.after = after;
-        const { data, rateLimit } = await client.get(`${client.accountPath(account_id)}/adbudgetschedules`, params);
+        const { data, rateLimit } = await client.get(
+          buildBudgetSchedulePath(parent_id, parent_type),
+          params
+        );
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
@@ -30,23 +35,30 @@ export function registerBudgetTools(server: McpServer, client: AdsClient): void 
   // ─── create_budget_schedule ───────────────────────────────────
   server.tool(
     "create_budget_schedule",
-    "Create a new ad budget schedule for the ad account.",
+    "Create a budget schedule on a campaign or ad set.",
     {
-      budget_value: z.string().describe("Budget amount in account currency cents"),
-      budget_value_type: z.string().describe("Budget value type (e.g. ABSOLUTE, MULTIPLIER)"),
-      time_start: z.string().describe("Schedule start time (ISO 8601 or Unix timestamp)"),
-      time_end: z.string().describe("Schedule end time (ISO 8601 or Unix timestamp)"),
-      account_id: z.string().optional().describe("Ad account ID to create the schedule in (e.g. 'act_123' or '123'). Falls back to META_AD_ACCOUNT_ID env var if omitted."),
+      parent_id: z.string().min(1).describe("Campaign or ad set ID that will own the budget schedule"),
+      parent_type: z.enum(["campaign", "adset"]).default("campaign").describe("Type of parent object"),
+      budget_value: z.number().int().positive().describe("Unsigned value interpreted according to budget_value_type (ABSOLUTE uses currency minor units)"),
+      budget_value_type: z.enum(["ABSOLUTE", "MULTIPLIER"]).describe("How budget_value is applied"),
+      time_start: z.number().int().positive().describe("Schedule start time as a Unix timestamp"),
+      time_end: z.number().int().positive().describe("Schedule end time as a Unix timestamp"),
     },
-    async ({ budget_value, budget_value_type, time_start, time_end, account_id }) => {
+    async ({ parent_id, parent_type, budget_value, budget_value_type, time_start, time_end }) => {
       try {
+        if (time_end <= time_start) {
+          throw new Error("time_end must be later than time_start.");
+        }
         const params: Record<string, unknown> = {
           budget_value,
           budget_value_type,
           time_start,
           time_end,
         };
-        const { data, rateLimit } = await client.post(`${client.accountPath(account_id)}/adbudgetschedules`, params);
+        const { data, rateLimit } = await client.post(
+          buildBudgetSchedulePath(parent_id, parent_type),
+          params
+        );
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {
         return { content: [{ type: "text" as const, text: `Failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
@@ -60,16 +72,25 @@ export function registerBudgetTools(server: McpServer, client: AdsClient): void 
     "Update an existing budget schedule. Only provided fields will be modified.",
     {
       schedule_id: z.string().describe("Budget schedule ID to update"),
-      budget_value: z.string().optional().describe("New budget amount in account currency cents"),
-      time_start: z.string().optional().describe("New schedule start time"),
-      time_end: z.string().optional().describe("New schedule end time"),
+      budget_value: z.number().int().positive().optional().describe("New unsigned value interpreted according to budget_value_type"),
+      budget_value_type: z.enum(["ABSOLUTE", "MULTIPLIER"]).optional().describe("How budget_value is applied"),
+      time_start: z.number().int().positive().optional().describe("New start time as a Unix timestamp"),
+      time_end: z.number().int().positive().optional().describe("New end time as a Unix timestamp"),
     },
-    async ({ schedule_id, budget_value, time_start, time_end }) => {
+    async ({ schedule_id, budget_value, budget_value_type, time_start, time_end }) => {
       try {
+        if (
+          time_start !== undefined &&
+          time_end !== undefined &&
+          time_end <= time_start
+        ) {
+          throw new Error("time_end must be later than time_start.");
+        }
         const params: Record<string, unknown> = {};
-        if (budget_value) params.budget_value = budget_value;
-        if (time_start) params.time_start = time_start;
-        if (time_end) params.time_end = time_end;
+        if (budget_value !== undefined) params.budget_value = budget_value;
+        if (budget_value_type !== undefined) params.budget_value_type = budget_value_type;
+        if (time_start !== undefined) params.time_start = time_start;
+        if (time_end !== undefined) params.time_end = time_end;
         const { data, rateLimit } = await client.post(`/${schedule_id}`, params);
         return { content: [{ type: "text" as const, text: JSON.stringify({ ...data as object, _rateLimit: rateLimit }, null, 2) }] };
       } catch (error) {

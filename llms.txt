@@ -27,8 +27,8 @@
 
 - META_ADS_ACCESS_TOKEN (required): Meta Marketing API access token
 - META_AD_ACCOUNT_ID (required): Ad account ID (numeric, without act_ prefix)
-- META_APP_ID (optional): App ID for token exchange/debug
-- META_APP_SECRET (optional): App secret for token exchange/debug
+- META_APP_ID (optional): App ID for token exchange/extension and debug
+- META_APP_SECRET (optional): App secret for token exchange/extension and debug
 - META_BUSINESS_ID (optional): Business Manager ID for business tools
 - META_PIXEL_ID (optional): Pixel ID for conversion tools
 

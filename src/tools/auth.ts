@@ -23,7 +23,7 @@ export function registerAuthTools(server: McpServer, client: AdsClient): void {
   // ─── refresh_token ────────────────────────────────────────────
   server.tool(
     "refresh_token",
-    "Refresh a long-lived access token to extend its expiration. Returns a new long-lived token.",
+    "Extend a valid long-lived user access token through Meta's documented token exchange flow. Requires META_APP_ID and META_APP_SECRET.",
     {
       long_lived_token: z.string().describe("Long-lived access token to refresh"),
     },

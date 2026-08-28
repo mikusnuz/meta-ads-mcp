@@ -21,7 +21,7 @@ Use `mcp__meta-ads__<tool>` for all Meta advertising operations.
 - `get_adset_insights` — Ad set-level breakdown
 - `get_ad_insights` — Ad-level breakdown
 - `create_async_report` — Large async reports
-- `get_async_report` — Poll and retrieve async report results
+- `get_async_report` — Poll report-run status and fetch `/insights` results once complete
 
 ### Audiences & Targeting
 - `create_custom_audience` — Create audience from customer data
@@ -49,6 +49,7 @@ Use `mcp__meta-ads__<tool>` for all Meta advertising operations.
 
 ### Auth & Token
 - `exchange_token` — Convert short-lived token to long-lived
+- `refresh_token` — Extend a valid long-lived user token using the documented exchange flow
 - `debug_token` — Inspect token metadata and permissions
 
 ## Common Workflows
@@ -84,6 +85,7 @@ Use `mcp__meta-ads__<tool>` for all Meta advertising operations.
 ## Rules
 - Ad account ID must be numeric without `act_` prefix
 - Use `exchange_token` to convert short-lived tokens to long-lived
+- Use lowercase `date_preset` values such as `today` or `last_30d`
 - Use `debug_token` to diagnose permission issues
 - Async reports needed for large date ranges or many breakdowns
 - All monetary values use the account's currency

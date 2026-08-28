@@ -47,8 +47,8 @@ Use this MCP when you need to:
 |---|---|---|
 | `META_ADS_ACCESS_TOKEN` | **Yes** | Meta Marketing API access token |
 | `META_AD_ACCOUNT_ID` | **Yes** | Ad account ID (numeric, without `act_` prefix) |
-| `META_APP_ID` | Optional | App ID — required for token exchange/debug |
-| `META_APP_SECRET` | Optional | App secret — required for token exchange/debug |
+| `META_APP_ID` | Optional | App ID — required for token exchange/extension and debug |
+| `META_APP_SECRET` | Optional | App secret — required for token exchange/extension and debug |
 | `META_BUSINESS_ID` | Optional | Business Manager ID — required for business tools |
 | `META_PIXEL_ID` | Optional | Pixel ID — required for conversion tools |
 
@@ -143,7 +143,9 @@ Use this MCP when you need to:
 | `get_adset_insights` | Ad set-level performance metrics |
 | `get_ad_insights` | Ad-level performance metrics |
 | `create_async_report` | Create an async insights report |
-| `get_async_report` | Poll async report status and results |
+| `get_async_report` | Poll the report-run status, then fetch its `/insights` results when complete |
+
+`date_preset` values are lowercase Graph API identifiers such as `today`, `yesterday`, `last_7d`, and `last_30d`. `create_async_report` always creates an asynchronous job; `get_async_report` returns status immediately and, by default, fetches the paginated result edge after the status becomes `Job Completed`.
 
 ### Leads (5)
 
@@ -210,8 +212,8 @@ Use this MCP when you need to:
 
 | Tool | Description |
 |---|---|
-| `list_budget_schedules` | List budget schedules |
-| `create_budget_schedule` | Create a budget schedule |
+| `list_budget_schedules` | List schedules from a campaign or ad set `budget_schedules` edge |
+| `create_budget_schedule` | Create a schedule on a campaign or ad set |
 | `update_budget_schedule` | Update a budget schedule |
 | `delete_budget_schedule` | Delete a budget schedule |
 | `list_rf_predictions` | List Reach & Frequency predictions |
@@ -254,7 +256,7 @@ Use this MCP when you need to:
 | Tool | Description |
 |---|---|
 | `exchange_token` | Exchange short-lived token for long-lived token |
-| `refresh_token` | Refresh a long-lived token |
+| `refresh_token` | Extend a valid long-lived user token through the documented exchange flow |
 | `debug_token` | Debug/inspect token metadata |
 
 ### Ad Library (1)
